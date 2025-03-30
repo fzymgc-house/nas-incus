@@ -1,0 +1,9 @@
+---
+- name: Restart dnscrypt-proxy
+  ansible.builtin.systemd:
+    name: dnscrypt-proxy
+    state: restarted
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true

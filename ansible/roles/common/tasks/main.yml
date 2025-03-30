@@ -1,0 +1,133 @@
+---
+- name: Add packages
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - curl
+    - debian-keyring
+    - debian-archive-keyring
+    - apt-transport-https
+    - ca-certificates
+    - fail2ban
+    - neovim
+    - ldnsutils
+    - lsof
+    - update-notifier-common
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    update_cache: true
+  changed_when: false
+
+- name: Create admin user
+  ansible.builtin.user:
+    name: fzymgc
+    shell: /usr/bin/bash
+    groups: [adm, users, sudo]
+    append: true
+    password: "*"
+    password_lock: true
+
+- name: Create sudoers.d file for users so they do not need a password
+  ansible.builtin.copy:
+    content: "{{ item }} ALL=(ALL) NOPASSWD:ALL"
+    dest: /etc/sudoers.d/{{ item }}
+    mode: "0440"
+  with_items:
+    - fzymgc
+
+- name: Add ssh key to admin user
+  ansible.posix.authorized_key:
+    user: fzymgc
+    state: present
+    key: "{{ lookup('onepassword', 'ssh-key--seanb4t_ed25519', field='public key') }}"
+
+- name: Create unattended upgrades configuration file
+  ansible.builtin.blockinfile:
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    block: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+    marker: "// {mark} ANSIBLE MANAGED BLOCK - unattended_upgrades settings"
+    create: true
+    mode: "0644"
+    owner: root
+    group: root
+  register: unattended_upgrades_config_set
+
+- name: Enable automated reboots
+  ansible.builtin.blockinfile:
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    block: |
+      Unattended-Upgrade::Automatic-Reboot "true";
+      Unattended-Upgrade::Automatic-Reboot-Time "{{ reboot_time }}";
+      Unattended-Upgrade::MinimalSteps "true";
+      Unattended-Upgrade::SyslogEnable "true";
+      Unattended-Upgrade::Mail "admin+{{ ansible_hostname }}@sean.fzymgc.email";
+    marker: "// {mark} ANSIBLE MANAGED BLOCK - unattended_upgrades settings"
+    mode: "0644"
+    owner: root
+    group: root
+  register: unattended_upgrades_settings_set
+
+- name: Enable additional unattended upgrades settings
+  ansible.builtin.lineinfile:
+    path: /etc/apt/apt.conf.d/50unattended-upgrades
+    regexp: "{{ item }}"
+    line: "        \\2"
+    state: present
+    backrefs: true
+  register: unattended_upgrades_settings_set
+  with_items:
+    - '^(//)?\s+("\${distro_id}:\${distro_codename}-updates";)'
+    - '^(//)?\s+("\${distro_id}:\${distro_codename}-proposed";)'
+    - '^(//)?\s+("\${distro_id}:\${distro_codename}-backports";)'
+
+- name: Dpkg reconfigure
+  ansible.builtin.command:
+    cmd: dpkg-reconfigure -f noninteractive unattended-upgrades
+  register: dpkg_reconfigure_unattended_upgrades
+  when:
+    - unattended_upgrades_config_set.changed or unattended_upgrades_settings_set.changed
+
+- name: Configure updates installation timing
+  ansible.builtin.lineinfile:
+    path: /lib/systemd/system/apt-daily-upgrade.timer
+    regexp: "^OnCalendar"
+    line: OnCalendar=*-*-* {{ install_time }}
+
+- name: Configure updates installation timing offset
+  ansible.builtin.lineinfile:
+    path: "/lib/systemd/system/apt-daily-upgrade.timer"
+    regexp: "^RandomizedDelaySec"
+    line: "RandomizedDelaySec={{ reboot_offset }}"
+
+- ansible.builtin.import_tasks: mail.yml
+  tags: mail
+
+- name: Configure fail2ban
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: true
+  tags: fail2ban
+
+- name: Configure fail2ban
+  ansible.builtin.template:
+    src: "fail2ban/{{ item }}-jail.conf.j2"
+    dest: "/etc/fail2ban/jail.d/{{ item }}.conf"
+  with_items:
+    - sshd
+  notify: restart fail2ban
+  tags: fail2ban
+
+- name: Configure ssh
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config
+    mode: "0600"
+    owner: root
+    group: root
+  notify: restart ssh

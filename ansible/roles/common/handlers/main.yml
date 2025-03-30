@@ -1,0 +1,19 @@
+---
+- name: restart postfix
+  ansible.builtin.systemd:
+    name: postfix
+    state: restarted
+
+- name: postmap mailgun_passwd
+  ansible.builtin.command: postmap /etc/postfix/sasl/mailgun_passwd
+  notify: restart postfix
+
+- name: restart fail2ban
+  ansible.builtin.systemd:
+    name: fail2ban
+    state: restarted
+
+- name: restart ssh
+  ansible.builtin.systemd:
+    name: ssh
+    state: restarted

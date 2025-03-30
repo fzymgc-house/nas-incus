@@ -1,0 +1,25 @@
+network:
+  renderer: networkd
+  version: 2
+  ethernets:
+    eth0:
+      dhcp4: false
+      dhcp6: false
+      ipv6-privacy: false
+      accept-ra: true
+      #ipv6-address-generation: stable-privacy
+      addresses:
+        - 192.168.20.201/22
+        - 2600:4040:27d2:4802::201/64
+      nameservers:
+        search: [fzymgc.house]
+        addresses: [192.168.20.1]
+      routes:
+        - to: 0.0.0.0/0
+          via: 192.168.20.1
+          metric: 1
+    eth1:
+      dhcp4: true
+      dhcp6: true
+      ipv6-privacy: false
+      accept-ra: true

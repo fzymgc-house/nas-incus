@@ -1,0 +1,120 @@
+---
+- name: Add packages
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - curl
+    - debian-keyring
+    - debian-archive-keyring
+    - apt-transport-https
+    - ca-certificates
+
+- name: Add caddy repos
+  block:
+    - name: Add cloudsmith gpg key for caddy
+      ansible.builtin.get_url:
+        url: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
+        dest: /etc/apt/keyrings/cloudsmithhub-caddy-stable.asc
+        checksum: sha256:5791c2fb6b6e82feb5a69834dd2131f4bcc30af0faec37783b2dc1c5c224a82a
+    - name: Add cloudsmith apt repository for caddy
+      ansible.builtin.copy:
+        content: |
+          # Source: Caddy
+          # Site: https://github.com/caddyserver/caddy
+          # Repository: Caddy / stable
+          # Description: Fast, multi-platform web server with automatic HTTPS
+          deb [signed-by=/etc/apt/keyrings/cloudsmithhub-caddy-stable.asc] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main
+          deb-src [signed-by=/etc/apt/keyrings/cloudsmithhub-caddy-stable.asc] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main
+        dest: /etc/apt/sources.list.d/caddy-stable.list
+      register: repo_updated
+    - name: Add cloudsmith gpg key for xcaddy
+      ansible.builtin.get_url:
+        url: https://dl.cloudsmith.io/public/caddy/xcaddy/gpg.key
+        dest: /etc/apt/keyrings/cloudsmithhub-xcaddy-stable.asc
+        checksum: sha256:5791c2fb6b6e82feb5a69834dd2131f4bcc30af0faec37783b2dc1c5c224a82a
+    - name: Add cloudsmith apt repository for xcaddy
+      ansible.builtin.copy:
+        content: |
+          # Source: Caddy
+          # Site: https://github.com/caddyserver/caddy
+          # Repository: Caddy / stable
+          # Description: Fast, multi-platform web server with automatic HTTPS
+          deb [signed-by=/etc/apt/keyrings/cloudsmithhub-xcaddy-stable.asc] https://dl.cloudsmith.io/public/caddy/xcaddy/deb/debian any-version main
+          deb-src [signed-by=/etc/apt/keyrings/cloudsmithhub-xcaddy-stable.asc] https://dl.cloudsmith.io/public/caddy/xcaddy/deb/debian any-version main
+        dest: /etc/apt/sources.list.d/xcaddy-stable.list
+      register: repo_updated
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+  when: repo_updated.changed
+
+- name: Install caddy
+  ansible.builtin.apt:
+    name: caddy
+    state: present
+
+- name: Install xcaddy and deps
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - xcaddy
+    - golang
+
+- name: Build custom caddy binary
+  ansible.builtin.shell:
+    cmd: |
+      xcaddy build --with github.com/caddy-dns/cloudflare
+      mv caddy /usr/bin/caddy.custom
+      dpkg-divert --divert /usr/bin/caddy.default --rename /usr/bin/caddy
+      update-alternatives --install /usr/bin/caddy caddy /usr/bin/caddy.default 10
+      update-alternatives --install /usr/bin/caddy caddy /usr/bin/caddy.custom 50
+    creates: /usr/bin/caddy.custom
+  notify: restart caddy
+
+- ansible.builtin.set_fact:
+    cloudflare_api_token: "{{ lookup('community.general.onepassword', 'cloudflare-api-token', field='password', vault='fzymgc-house') }}"
+    zerossl_key_id: "{{ lookup('community.general.onepassword', 'zerossl-eab-creds', field='username', vault='fzymgc-house') }}"
+    zerossl_mac_key: "{{ lookup('community.general.onepassword', 'zerossl-eab-creds', field='password', vault='fzymgc-house') }}"
+
+- name: Configure caddy
+  ansible.builtin.template:
+    src: Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    mode: "0640"
+    owner: caddy
+    group: caddy
+    backup: true
+    variable_start_string: "%["
+    variable_end_string: "]%"
+  notify: restart caddy
+
+- name: Enable caddy service
+  ansible.builtin.systemd:
+    name: caddy
+    enabled: true
+    state: started
+
+- name: Add admin user to caddy group
+  ansible.builtin.user:
+    name: fzymgc
+    groups: caddy
+    state: present
+    append: true
+
+- name: Create caddy sites dir
+  ansible.builtin.file:
+    path: /etc/caddy/sites
+    mode: "0755"
+    owner: caddy
+    group: caddy
+    state: directory
+
+- name: Enable and start caddy service
+  ansible.builtin.systemd:
+    name: caddy
+    enabled: true
+    state: started

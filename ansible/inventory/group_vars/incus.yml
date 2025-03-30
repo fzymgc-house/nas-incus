@@ -1,0 +1,3 @@
+---
+mailgun_smtp_user: "{{ lookup('community.general.onepassword', 'mailgun-fzymgc-house-outbound', vault='fzymgc-house', field='username') }}"
+mailgun_smtp_password: "{{ lookup('community.general.onepassword', 'mailgun-fzymgc-house-outbound', vault='fzymgc-house', field='password') }}"

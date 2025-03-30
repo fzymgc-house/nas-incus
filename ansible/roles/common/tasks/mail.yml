@@ -1,0 +1,51 @@
+---
+- ansible.builtin.debconf:
+    name: postfix
+    question: postfix/main_mailer_type
+    value: "Satellite system"
+    vtype: select
+
+- ansible.builtin.debconf:
+    name: postfix
+    question: postfix/mailname
+    value: "{{ ansible_fqdn }}"
+    vtype: string
+
+- ansible.builtin.debconf:
+    name: postfix
+    question: postfix/relayhost
+    value: "[smtp.mailgun.org]:587"
+    vtype: string
+
+- name: Install packages for mail
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - postfix
+    - mailutils
+    - bsd-mailx
+    - libsasl2-modules
+    - ca-certificates
+  tags:
+    - packages
+
+- ansible.builtin.meta: flush_handlers
+- name: Add relay password
+  ansible.builtin.copy:
+    content: |
+      [smtp.mailgun.org]:587 {{ mailgun_smtp_user }}:{{ mailgun_smtp_password }}
+    dest: /etc/postfix/sasl/mailgun_passwd
+    owner: root
+    group: root
+    mode: "0600"
+  notify: postmap mailgun_passwd
+
+- name: Configure postfix
+  ansible.builtin.template:
+    src: postfix-main.cf.j2
+    dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart postfix

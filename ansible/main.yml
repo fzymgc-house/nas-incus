@@ -1,0 +1,68 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Provision incus instances
+      community.general.terraform:
+        project_path: "{{ playbook_dir }}/../tf"
+        state: present
+      tags:
+        - incus
+        - terraform
+
+- hosts: incus
+  gather_facts: false
+  strategy: free
+  tasks:
+    - name: Wait for node to be up
+      ansible.builtin.wait_for:
+        host: "{{ inventory_hostname }}"
+        port: 22
+        delay: 5
+      delegate_to: localhost
+    - name: Wait for cloud-init / user-data to finish
+      ansible.builtin.command: cloud-init status --wait
+      changed_when: false
+      failed_when: false
+    - name: Update apt cache
+      ansible.builtin.apt:
+        lock_timeout: 300 # 5 minutes on initial boot
+        update_cache: true
+      changed_when: false
+    - name: Upgrade all packages
+      ansible.builtin.apt:
+        lock_timeout: 300 # 5 minutes on initial boot
+        upgrade: full
+      register: upgrade
+    - name: Set hostname
+      ansible.builtin.hostname:
+        name: "{{ ansible_fqdn }}"
+    - name: Reboot
+      ansible.builtin.reboot:
+      when: upgrade.changed
+
+- hosts: incus
+  gather_facts: true
+  become: true
+  strategy: free
+  tags:
+    - incus
+    - incus-common
+    - common
+  roles:
+    - role: common
+
+- name: Run nas-app-proxy playbook
+  ansible.builtin.import_playbook: nas-app-proxy-playbook.yml
+  tags:
+    - nas-app-proxy
+
+- name: Run nas-support playbook
+  ansible.builtin.import_playbook: nas-support-playbook.yml
+  tags:
+    - nas-support
+
+- name: Run nas-container-apps playbook
+  ansible.builtin.import_playbook: nas-container-apps-playbook.yml
+  tags:
+    - nas-container-apps

@@ -1,0 +1,27 @@
+---
+incus:
+  hosts:
+    nas-app-proxy:
+      ansible_host: nas-app-proxy.fzymgc.house
+      ansible_fqdn: nas-app-proxy.fzymgc.house
+      ansible_user: fzymgc
+      ansible_become: true
+      reboot_offset: 15m
+      install_time: 01:30
+      reboot_time: 02:00
+    nas-support:
+      ansible_host: nas-support.fzymgc.house
+      ansible_fqdn: nas-support.fzymgc.house
+      ansible_user: fzymgc
+      ansible_become: true
+      reboot_offset: 15m
+      install_time: 01:45
+      reboot_time: 02:15
+    nas-container-apps:
+      ansible_host: nas-container-apps.fzymgc.house
+      ansible_fqdn: nas-container-apps.fzymgc.house
+      ansible_user: fzymgc
+      ansible_become: true
+      reboot_offset: 15m
+      install_time: 02:00
+      reboot_time: 02:30
