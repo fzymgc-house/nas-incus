@@ -1,0 +1,19 @@
+
+- hosts: nas-app-proxy
+  gather_facts: true
+  become: true
+  tags:
+    - nas-app-proxy
+  roles:
+    - role: dnscrypt-proxy
+      tags: dnscrypt-proxy
+    - role: caddy
+      tags: caddy
+    - role: artis3n.tailscale.device
+      vars:
+      tailscale_authkey: "{{ lookup('community.general.onepassword', 'tailscale-oauth nas-app-proxy', field='password', vault='fzymgc-house') }}"
+      tailscale_args: "--ssh --reset"
+      tailscale_oauth_preauthorized: true
+      tailscale_oauth_ephemeral: false
+      tailscale_tags: [nas, shared]
+      tags: tailscale

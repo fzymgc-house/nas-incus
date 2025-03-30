@@ -1,0 +1,14 @@
+
+- hosts: nas-container-apps
+  gather_facts: true
+  become: true
+  tags:
+    - nas-container-apps
+  roles:
+    - role: geerlingguy.docker
+      vars:
+        docker_users: [fzymgc]
+        docker_install_compose_plugin: true
+        docker_compose_package: docker-compose-plugin
+        docker_compose_package_state: present
+      tags: docker
