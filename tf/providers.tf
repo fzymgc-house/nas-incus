@@ -15,3 +15,12 @@ provider "incus" {
 provider "onepassword" {
 
 }
+
+terraform {
+  cloud {
+    organization = "fzymgc-house"
+    workspaces {
+      name = "incus-nas"
+    }
+  }
+}
