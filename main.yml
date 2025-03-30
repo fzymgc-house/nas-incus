@@ -5,6 +5,7 @@
     - name: Provision incus instances
       community.general.terraform:
         project_path: "{{ playbook_dir }}/tf"
+        workspace: "incus-nas"
         state: present
       tags:
         - incus
