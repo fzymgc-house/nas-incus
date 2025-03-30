@@ -1,0 +1,10 @@
+
+frontend {{ game_host_name }}-console
+  mode tcp
+  option tcplog
+  bind :{{ game_host_port }}
+  default_backend {{ game_host_name }}-console-backend
+
+backend {{ game_host_name }}-console-backend
+  mode tcp
+  server {{ game_host_name }}-console-1 {{ game_host_name }}.hound-skate.ts.net:{{ game_host_port }} init-addr last,libc,none

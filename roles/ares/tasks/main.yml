@@ -1,0 +1,266 @@
+---
+- name: Install packages
+  ansible.builtin.package:
+    name: "{{ packages_to_install }}"
+    state: present
+
+- name: Include caddy tasks
+  ansible.builtin.import_tasks: caddy.ansible.yml
+  tags: caddy
+
+- name: Create ares group
+  ansible.builtin.group:
+    name: ares
+    gid: 2000
+
+- name: Create ares user
+  ansible.builtin.user:
+    name: ares
+    shell: /bin/bash
+    append: yes
+    uid: 2000
+    group: ares
+    groups: www-data,valkey,caddy
+
+- name: Stat for ~ares/.profile
+  ansible.builtin.stat:
+    path: /home/ares/.profile
+  register: ares_profile_exists
+
+- name: Chown ares home dir
+  ansible.builtin.file:
+    path: /home/ares
+    owner: ares
+    group: ares
+    state: directory
+    recurse: yes
+  when: (ares_profile_exists.stat.exists and ares_profile_exists.stat.pw_name != "ares") or ( not ares_profile_exists.stat.exists )
+
+- name: Ensure ares home dir has the right mode
+  ansible.builtin.file:
+    path: /home/ares
+    mode: 0755
+    owner: ares
+    group: ares
+    state: directory
+
+- name: Copy in skeleton home dir config if files do not exist
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /home/ares/{{ item }}
+    mode: 0644
+    owner: ares
+    group: ares
+    force: false
+  with_fileglob: "/etc/skel/.*"
+  when: ares_profile_exists.stat.exists == false
+
+- name: Add caddy to ares group
+  ansible.builtin.user:
+    name: caddy
+    groups: ares
+    append: yes
+  notify: restart caddy
+
+- name: Add github public keys to admin user
+  ansible.posix.authorized_key:
+    user: ares
+    state: present
+    key: http://github.com/seanb4t.keys
+
+- name: Create sudoers.d file for users so they do not need a password
+  ansible.builtin.copy:
+    content: "{{ item }} ALL=(ALL) NOPASSWD:ALL"
+    dest: /etc/sudoers.d/{{ item }}
+    mode: 0440
+  with_items:
+  - ares
+
+- name: Install RVM
+  become_user: ares
+  ansible.builtin.shell:
+    cmd: |
+      curl -sSL https://rvm.io/mpapis.asc | gpg --import -
+      curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
+      curl -sSL https://get.rvm.io | bash -s stable
+    creates: /home/ares/.rvm/bin/rvm
+
+- name: Install Ruby
+  become_user: ares
+  ansible.builtin.shell:
+    cmd: |
+      source /home/ares/.rvm/scripts/rvm
+      rvm install {{ ruby_version }}
+      rvm --default use {{ ruby_version }}
+    creates:  /home/ares/.rvm/rubies/ruby-{{ ruby_version }}/bin/ruby
+
+- name: Update .profile with rvm config
+  ansible.builtin.blockinfile:
+    dest: /home/ares/.profile
+    block: |
+      source /home/ares/.rvm/scripts/rvm
+      rvm --default use {{ ruby_version }}
+    marker: "# {mark} rvm ANSIBLE MANAGED BLOCK"
+
+- name: Install required gems
+  become_user: ares
+  ansible.builtin.shell:
+    cmd: |
+      source /home/ares/.rvm/scripts/rvm
+      gem install bundler
+      gem install rake
+    creates: /home/ares/.rvm/rubies/ruby-{{ ruby_version }}/bin/bundler
+
+- name: Clone aresmush
+  become_user: ares
+  ansible.builtin.git:
+    repo: "{{ aresmush_git_url }}"
+    dest: /home/ares/aresmush
+    version: "{{ aresmush_git_branch }}"
+    force: false
+
+- name: Clone ares webportal
+  become_user: ares
+  ansible.builtin.git:
+    repo: "{{ areswebportal_git_url }}"
+    dest: /home/ares/ares-webportal
+    version: "{{ areswebportal_git_branch }}"
+    force: false
+
+- name: Create game dir if needed
+  become_user: ares
+  ansible.builtin.shell:
+    cmd: |
+      cd ~/aresmush
+      cp -rp install/game.distr game
+      mkdir -p game/logs
+    creates: /home/ares/aresmush/game
+
+- name: Ensure bin dir files are executable
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: 0755
+    owner: ares
+    group: ares
+  with_fileglob: /home/ares/aresmush/bin/*
+
+- name: Ensure web-portal bin dir files are executable
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: 0755
+    owner: ares
+    group: ares
+  with_fileglob: /home/ares/ares-webportal/bin/*
+
+- name: Ensure valkey dir is owned by valkey
+  ansible.builtin.file:
+    path: /var/lib/valkey
+    owner: valkey
+    group: valkey
+    state: directory
+    recurse: yes
+
+- name: Configure valkey
+  ansible.builtin.template:
+    src: valkey.conf.j2
+    dest: /etc/valkey/valkey.conf
+    mode: 0640
+    owner: valkey
+    group: valkey
+    backup: yes
+  notify: restart valkey
+  tags:
+  - valkey
+
+- name: Remove redis migration flag
+  ansible.builtin.file:
+    path: /etc/valkey/REDIS_MIGRATION
+    state: absent
+  notify: restart valkey
+  tags:
+  - valkey
+
+- meta: flush_handlers
+  tags: always
+
+- name: Bootstrap configure ares
+  become_user: ares
+  ansible.builtin.shell:
+    cmd: |
+      cd ~/aresmush
+      source /home/ares/.rvm/scripts/rvm
+      rvm use {{ ruby_version }}
+      bin/configure host_name={{ game_host_name }}.{{ game_host_domain }}
+      touch game/.configured
+    creates: /home/ares/aresmush/game/.configured
+
+- name: Update server config bind_address
+  ansible.builtin.lineinfile:
+    path: /home/ares/aresmush/game/config/server.yml
+    regexp: ^(\s*)bind_address
+    backrefs: true
+    line: "\\1bind_address: '0.0.0.0'"
+
+- name: Create ares secrets.yml
+  ansible.builtin.template:
+    src: ares-secrets.yml.j2
+    dest: /home/ares/aresmush/game/config/secrets.yml
+    mode: 0600
+    owner: ares
+    group: ares
+
+- name: Ensure database config is correct
+  ansible.builtin.lineinfile:
+    path: /home/ares/aresmush/game/config/database.yml
+    regexp: ^path
+    line: 'path: "/var/lib/valkey/dump.rdb"'
+    backup: yes
+
+- name: Do an initial wipe of the database
+  become_user: ares
+  ansible.builtin.shell:
+    cmd: |
+      cd ~/aresmush
+      source /home/ares/.rvm/scripts/rvm
+      rvm use {{ ruby_version }}
+      bin/wipedb && touch game/.dbinitialized
+    creates: /home/ares/aresmush/game/.dbinitialized
+
+- name: Install nvm
+  become_user: ares
+  ansible.builtin.shell:
+    cmd: |
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+      nvm install 18
+      nvm use 18
+      npm install -g ember-cli
+    creates: /home/ares/.nvm/nvm.sh
+
+- name: Run initial db migrations
+  become_user: ares
+  ansible.builtin.shell:
+    cmd: |
+      cd ~/aresmush
+      source /home/ares/.rvm/scripts/rvm
+      rvm use {{ ruby_version }}
+      bundle exec rake initmigrations
+      touch game/.dbinitialmigrations-complete
+    creates: /home/ares/aresmush/game/.dbinitialmigrations-complete
+
+- ansible.builtin.import_tasks: cloudflare.ansible.yml
+  tags:
+  - cloudflare
+
+- ansible.builtin.import_tasks: edge-node-haproxy.ansible.yml
+  tags:
+  - haproxy
+  - edge-node
+  - edge-node-haproxy
+
+- import_tasks: edge-node-caddy.ansible.yml
+  tags:
+  - edge-node-caddy
+  - edge-node
+  - caddy

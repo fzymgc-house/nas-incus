@@ -1,0 +1,18 @@
+packages_to_install:
+  - curl
+  - debian-keyring
+  - debian-archive-keyring
+  - apt-transport-https
+  - ca-certificates
+  - fail2ban
+  - neovim
+  - ldnsutils
+  - lsof
+  - update-notifier-common
+
+packages_to_install_for_mail:
+  - postfix
+  - mailutils
+  - bsd-mailx
+  - libsasl2-modules
+  - ca-certificates

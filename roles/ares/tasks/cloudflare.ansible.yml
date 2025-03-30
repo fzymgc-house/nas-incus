@@ -1,0 +1,10 @@
+- name: Configure cloudflare dns to point to edge node
+  ansible.builtin.cloudflare_dns:
+    zone: muxserver.net
+    type: CNAME
+    name: "{{ game_host_name }}"
+    value: edge-node.muxserver.net
+    ttl: 1
+    proxied: false
+    api_token: "{{ lookup('onepassword', 'cloudflare-api-token', field='password', vault='fzymgc-house') }}"
+  tags: cloudflare

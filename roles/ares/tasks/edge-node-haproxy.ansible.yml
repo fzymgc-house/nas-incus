@@ -1,0 +1,13 @@
+- name: Configure haproxy console port on edge node
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: "/etc/haproxy/config/{{ game_host_name }}.cfg"
+    mode: 0644
+    owner: root
+    group: root
+    backup: yes
+  tags:
+  - haproxy
+  - edge-node
+  delegate_to: edge-node
+  notify: restart edge-node haproxy

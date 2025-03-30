@@ -2,19 +2,8 @@
 - name: Add packages
   ansible.builtin.apt:
     cache_valid_time: 3600
-    name: "{{ item }}"
+    name: "{{ packages_to_install }}"
     state: present
-  with_items:
-    - curl
-    - debian-keyring
-    - debian-archive-keyring
-    - apt-transport-https
-    - ca-certificates
-    - fail2ban
-    - neovim
-    - ldnsutils
-    - lsof
-    - update-notifier-common
 
 - name: Update apt cache
   ansible.builtin.apt:

@@ -1,0 +1,16 @@
+- name: Update caddy config on edge node
+  ansible.builtin.copy:
+    dest: /etc/caddy/sites/{{game_host_name}}.conf
+    content: |
+      {{game_host_name}}.{{game_host_domain}} {
+        encode zstd gzip
+        tls {{game_host_name}}-acme@sean.muxserver.net
+        reverse_proxy * https://{{game_host_name}}.hound-skate.ts.net:443 {
+          header_up Host {upstream_hostport}
+        }
+      }
+    mode: 0644
+    owner: caddy
+    group: caddy
+  delegate_to: edge-node
+  notify: restart edge-node caddy

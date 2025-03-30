@@ -1,0 +1,26 @@
+- name: restart caddy
+  ansible.builtin.service:
+    name: caddy
+    state: restarted
+
+- name: restart edge-node caddy
+  ansible.builtin.service:
+    name: caddy
+    state: restarted
+  delegate_to: edge-node
+
+- name: restart tailscaled
+  ansible.builtin.service:
+    name: tailscaled
+    state: restarted
+
+- name: restart edge-node haproxy
+  ansible.builtin.service:
+    name: haproxy
+    state: restarted
+  delegate_to: edge-node
+
+- name: restart valkey
+  ansible.builtin.service:
+    name: valkey
+    state: restarted

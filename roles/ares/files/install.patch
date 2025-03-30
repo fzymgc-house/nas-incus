@@ -1,0 +1,18 @@
+--- install.orig        2025-02-25 14:25:51.040219713 +0000
++++ install     2025-02-25 14:27:52.218628490 +0000
+@@ -98,6 +98,15 @@
+
+ # #########################################################################################
+
++echo -e "${ARES_INSTALL_TEXT} Copy in secrets.yml from home, if it exists."
++
++if [ -f ~/secrets.yml ]; then
++  cp ~/secrets.yml game/config/secrets.yml
++  chmod 0600 game/config/secrets.yml
++fi
++
++# #########################################################################################
++
+ echo -e "${ARES_INSTALL_TEXT} Run the configure script to set up basic game options."
+
+ bin/configure ${CONFIG_OPTIONS}

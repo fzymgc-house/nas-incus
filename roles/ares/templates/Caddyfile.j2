@@ -1,0 +1,46 @@
+{
+  email admin+ares+{{ansible_fqdn}}@sean.muxserver.net
+  log default {
+    output stdout
+    level DEBUG
+  }
+  servers {
+    trusted_proxies static private_ranges fd7a:115c:a1e0::/48 100.64.0.0/10
+    client_ip_headers X-Forwarded-For X-Real-IP
+  }
+}
+
+{{ansible_fqdn}}.{{tailscale_domain}} {
+  encode zstd gzip
+
+  @websockets {
+    header Connection *Upgrade*
+    header Upgrade websocket
+  }
+
+  reverse_proxy @websockets 127.0.0.1:4202
+
+  handle /websocket/* {
+    reverse_proxy 127.0.0.1:4202
+  }
+
+  handle /websocket {
+    reverse_proxy 127.0.0.1:4202
+  }
+
+  handle /api/* {
+    reverse_proxy 127.0.0.1:4203
+  }
+
+  handle /game/* {
+    root * /home/ares/aresmush
+    file_server {
+      hide .git
+    }
+  }
+  handle {
+    root * /home/ares/ares-webportal/dist
+    try_files {path} /index.html
+    file_server
+  }
+}

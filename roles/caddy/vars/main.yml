@@ -1,0 +1,6 @@
+packages_to_install:
+  - curl
+  - debian-keyring
+  - debian-archive-keyring
+  - apt-transport-https
+  - ca-certificates

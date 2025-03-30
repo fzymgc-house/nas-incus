@@ -1,7 +1,15 @@
 ---
+ungrouped:
+  hosts:
+    edge-node:
+      ansible_user: root
+      ansible_become: false
+      ansible_host: edge-node
+
 incus:
   hosts:
     nas-app-proxy:
+      ansible_hostname: nas-app-proxy
       ansible_host: nas-app-proxy.fzymgc.house
       ansible_fqdn: nas-app-proxy.fzymgc.house
       ansible_user: fzymgc
@@ -10,6 +18,7 @@ incus:
       install_time: 01:30
       reboot_time: 02:00
     nas-support:
+      ansible_hostname: nas-support
       ansible_host: nas-support.fzymgc.house
       ansible_fqdn: nas-support.fzymgc.house
       ansible_user: fzymgc
@@ -18,6 +27,7 @@ incus:
       install_time: 01:45
       reboot_time: 02:15
     nas-container-apps:
+      ansible_hostname: nas-container-apps
       ansible_host: nas-container-apps.fzymgc.house
       ansible_fqdn: nas-container-apps.fzymgc.house
       ansible_user: fzymgc
@@ -25,3 +35,36 @@ incus:
       reboot_offset: 15m
       install_time: 02:00
       reboot_time: 02:30
+    doorsportal1:
+      ansible_hostname: doorsportal1
+      ansible_user: fzymgc
+      ansible_become: true
+      ansible_host: doorsportal1.fzymgc.house
+      ansible_fqdn: doorsportal1.fzymgc.house
+      game_host_name: "{{ ansible_fqdn }}"
+      game_host_domain: muxserver.net
+      game_host_port: 4211
+      game_db_password: "{{ lookup('onepassword', 'aresmush-db-password-doorsportal1', vault='fzymgc-house', field='password') }}"
+      game_engine_api_key: "{{ lookup('onepassword', 'aresmush-engine-api-key-doorsportal1', vault='fzymgc-house', field='password') }}"
+      reboot_offset: 15m
+      install_time: 03:00
+      reboot_time: 03:30
+    precipice:
+      ansible_hostname: precipice
+      ansible_user: fzymgc
+      ansible_become: true
+      ansible_host: precipice.fzymgc.house
+      ansible_fqdn: precipice.fzymgc.house
+      game_host_name: "{{ ansible_fqdn }}"
+      game_host_domain: muxserver.net
+      game_host_port: 4201
+      game_db_password: "{{ lookup('onepassword', 'aresmush-db-password-precipice', vault='fzymgc-house', field='password') }}"
+      game_engine_api_key: "{{ lookup('onepassword', 'aresmush-engine-api-key-precipice', vault='fzymgc-house', field='password') }}"
+      reboot_offset: 15m
+      install_time: 03:45
+      reboot_time: 04:15
+
+aresmush_servers:
+  hosts:
+    doorsportal1:
+    precipice:

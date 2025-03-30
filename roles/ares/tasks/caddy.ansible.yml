@@ -1,10 +1,3 @@
----
-- name: Add packages
-  ansible.builtin.apt:
-    cache_valid_time: 3600
-    name: "{{ packages_to_install }}"
-    state: present
-
 - name: Add caddy repos
   block:
     - name: Add cloudsmith gpg key for caddy
@@ -22,7 +15,6 @@
           deb [signed-by=/etc/apt/keyrings/cloudsmithhub-caddy-stable.asc] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main
           deb-src [signed-by=/etc/apt/keyrings/cloudsmithhub-caddy-stable.asc] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main
         dest: /etc/apt/sources.list.d/caddy-stable.list
-      register: repo_updated
     - name: Add cloudsmith gpg key for xcaddy
       ansible.builtin.get_url:
         url: https://dl.cloudsmith.io/public/caddy/xcaddy/gpg.key
@@ -38,12 +30,18 @@
           deb [signed-by=/etc/apt/keyrings/cloudsmithhub-xcaddy-stable.asc] https://dl.cloudsmith.io/public/caddy/xcaddy/deb/debian any-version main
           deb-src [signed-by=/etc/apt/keyrings/cloudsmithhub-xcaddy-stable.asc] https://dl.cloudsmith.io/public/caddy/xcaddy/deb/debian any-version main
         dest: /etc/apt/sources.list.d/xcaddy-stable.list
-      register: repo_updated
 
-- name: Update apt cache
+- name: Apt update
   ansible.builtin.apt:
-    update_cache: true
-  when: repo_updated.changed
+    update_cache: yes
+  changed_when: false
+
+- name: Allow caddy to talk to tailscaled
+  ansible.builtin.lineinfile:
+    path: /etc/default/tailscaled
+    line: TS_PERMIT_CERT_UID=caddy
+    insertafter: EOF
+  notify: restart tailscaled
 
 - name: Install caddy
   ansible.builtin.apt:
@@ -55,60 +53,32 @@
     name: "{{ item }}"
     state: present
   with_items:
-    - xcaddy
-    - golang
+  - xcaddy
+  - golang
 
 - name: Build custom caddy binary
   ansible.builtin.shell:
     cmd: |
       xcaddy build --with github.com/caddy-dns/cloudflare
       mv caddy /usr/bin/caddy.custom
+      cp /usr/bin/caddy /usr/bin/caddy.default
       dpkg-divert --divert /usr/bin/caddy.default --rename /usr/bin/caddy
       update-alternatives --install /usr/bin/caddy caddy /usr/bin/caddy.default 10
       update-alternatives --install /usr/bin/caddy caddy /usr/bin/caddy.custom 50
     creates: /usr/bin/caddy.custom
-  notify: restart caddy
-
-- ansible.builtin.set_fact:
-    cloudflare_api_token: "{{ lookup('community.general.onepassword', 'cloudflare-api-token', field='password', vault='fzymgc-house') }}"
-    zerossl_key_id: "{{ lookup('community.general.onepassword', 'zerossl-eab-creds', field='username', vault='fzymgc-house') }}"
-    zerossl_mac_key: "{{ lookup('community.general.onepassword', 'zerossl-eab-creds', field='password', vault='fzymgc-house') }}"
 
 - name: Configure caddy
   ansible.builtin.template:
     src: Caddyfile.j2
     dest: /etc/caddy/Caddyfile
-    mode: "0640"
+    mode: 0640
     owner: caddy
     group: caddy
-    backup: true
-    variable_start_string: "%["
-    variable_end_string: "]%"
+    backup: yes
   notify: restart caddy
 
 - name: Enable caddy service
   ansible.builtin.systemd:
     name: caddy
-    enabled: true
-    state: started
-
-- name: Add admin user to caddy group
-  ansible.builtin.user:
-    name: fzymgc
-    groups: caddy
-    state: present
-    append: true
-
-- name: Create caddy sites dir
-  ansible.builtin.file:
-    path: /etc/caddy/sites
-    mode: "0755"
-    owner: caddy
-    group: caddy
-    state: directory
-
-- name: Enable and start caddy service
-  ansible.builtin.systemd:
-    name: caddy
-    enabled: true
+    enabled: yes
     state: started

@@ -1,0 +1,24 @@
+aresmush_git_url: https://github.com/seanb4t/aresmush.git
+aresmush_git_branch: muxserver/main
+areswebportal_git_url: https://github.com/seanb4t/ares-webportal.git
+areswebportal_git_branch: muxserver/main
+ruby_version: 3.1.2
+
+packages_to_install:
+  - autoconf
+  - automake
+  - binutils
+  - bison
+  - build-essential
+  - dialog
+  - fish
+  - git
+  - nodejs
+  - npm
+  - python3
+  - ruby-bundler
+  - ruby-dev
+  - unattended-upgrades
+  - uuid
+  - valkey
+  - valkey-redis-compat

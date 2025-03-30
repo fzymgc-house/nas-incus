@@ -41,6 +41,8 @@ users:
     uid: 568
     shell: /bin/bash
     lock_passwd: true
+runcmd:
+  - groupmod -g 568 apps
 write_files:
   - path: /etc/systemd/resolved.conf
     owner: 'root:root'

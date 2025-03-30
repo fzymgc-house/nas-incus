@@ -1,0 +1,10 @@
+--- install.orig        2025-02-26 00:44:18.729004347 +0000
++++ install     2025-02-26 00:45:03.109889596 +0000
+@@ -162,6 +162,8 @@
+
+ cd "${HOME_DIR}/aresmush"
+
++perl -pi -e "s/bind_address: ''/bind_address: '0.0.0.0'/g" game/config/server.yml
++
+ bundle exec rake initmigrations
+ bin/startares

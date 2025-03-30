@@ -67,3 +67,8 @@
   ansible.builtin.import_playbook: nas-container-apps-playbook.yml
   tags:
     - nas-container-apps
+
+- name: Run ares-servers playbook
+  ansible.builtin.import_playbook: ares-servers-playbook.yml
+  tags:
+    - ares-servers

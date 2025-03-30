@@ -19,14 +19,8 @@
 
 - name: Install packages for mail
   ansible.builtin.apt:
-    name: "{{ item }}"
+    name: "{{ packages_to_install_for_mail }}"
     state: latest
-  with_items:
-    - postfix
-    - mailutils
-    - bsd-mailx
-    - libsasl2-modules
-    - ca-certificates
   tags:
     - packages
 
