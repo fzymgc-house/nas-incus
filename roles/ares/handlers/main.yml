@@ -24,3 +24,7 @@
   ansible.builtin.service:
     name: valkey
     state: restarted
+
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true

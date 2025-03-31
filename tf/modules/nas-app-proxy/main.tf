@@ -3,9 +3,19 @@ data "incus_project" "default" {
   name = "default"
 }
 
-resource "incus_profile" "nas-app-proxy" {
+resource "incus_instance" "nas-app-proxy" {
   name = "nas-app-proxy"
-  description = "NAS App Proxy profile"
+  description = "NAS App Proxy"
+  image = "images:ubuntu/oracular/cloud"
+  profiles = ["default", "base"]
+
+  config = {
+    "user.access_interface" = "eth0"
+    "raw.idmap" = <<-EOT
+      uid 568 568
+      gid 568 568
+    EOT
+  }
 
   device {
     name = "eth0"
@@ -35,35 +45,6 @@ resource "incus_profile" "nas-app-proxy" {
       path = "/data"
     }
   }
-
-  config = {
-    "boot.autostart" = true
-    "linux.kernel_modules" = "br_netfilter"
-    "security.nesting" = true
-    "security.syscalls.intercept.mknod" = true
-    "security.syscalls.intercept.setxattr" = true
-    "cloud-init.network-config" = file("${path.module}/cloud-init.network-config.yaml")
-    "cloud-init.user-data" = file("${path.module}/cloud-init.user-data.yaml")
-  }
-}
-
-resource "incus_instance" "nas-app-proxy" {
-  name = "nas-app-proxy"
-  description = "NAS App Proxy"
-  image = "images:ubuntu/oracular/cloud"
-  profiles = ["default", incus_profile.nas-app-proxy.name]
-
-  config = {
-    "user.access_interface" = "eth0"
-    "raw.idmap" = <<-EOT
-      uid 568 568
-      uid 3000 3000
-      gid 568 568
-      gid 4000 4000
-      gid 3000 3000
-    EOT
-  }
-
   wait_for {
     type = "ipv4"
     nic = "eth0"

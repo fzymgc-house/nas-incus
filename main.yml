@@ -14,13 +14,16 @@
 - hosts: incus
   gather_facts: false
   strategy: free
+  tags:
+    - incus
+    - incus-boot
   tasks:
-    - name: Wait for node to be up
-      ansible.builtin.wait_for:
-        host: "{{ inventory_hostname }}"
-        port: 22
-        delay: 5
-      delegate_to: localhost
+    # - name: Wait for node to be up
+    #   ansible.builtin.wait_for:
+    #     host: "{{ inventory_hostname }}"
+    #     port: 22
+    #     delay: 5
+    #   delegate_to: localhost
     - name: Wait for cloud-init / user-data to finish
       ansible.builtin.command: cloud-init status --wait
       changed_when: false

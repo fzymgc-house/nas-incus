@@ -111,6 +111,14 @@
       gem install rake
     creates: /home/ares/.rvm/rubies/ruby-{{ ruby_version }}/bin/bundler
 
+- name: Declare safe git dirs
+  become_user: ares
+  ansible.builtin.shell:
+    cmd: |
+      git config --global --add safe.directory /home/ares/aresmush
+      git config --global --add safe.directory /home/ares/ares-webportal
+  changed_when: false
+
 - name: Clone aresmush
   become_user: ares
   ansible.builtin.git:
@@ -248,6 +256,32 @@
       bundle exec rake initmigrations
       touch game/.dbinitialmigrations-complete
     creates: /home/ares/aresmush/game/.dbinitialmigrations-complete
+
+- name: Install start-ares and stop-ares scripts
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /home/ares/{{ item }}
+    mode: 0755
+    owner: ares
+    group: ares
+  with_items:
+  - start-ares.sh
+  - stop-ares.sh
+
+- name: Create aresmush systemd unit
+  ansible.builtin.template:
+    src: aresmush-systemd-unit.j2
+    dest: /etc/systemd/system/aresmush.service
+    mode: 0644
+    owner: root
+    group: root
+  notify: reload systemd
+
+- name: Enable aresmush systemd unit
+  ansible.builtin.systemd:
+    name: aresmush
+    state: started
+    enabled: true
 
 - ansible.builtin.import_tasks: cloudflare.ansible.yml
   tags:

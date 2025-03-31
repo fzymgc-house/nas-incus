@@ -1,0 +1,25 @@
+# system-networkd
+
+[Match]
+Name={{ host_interface_name }}
+
+[Network]
+DHCP=no
+Address={{ host_ipv4_address }}
+{% if host_ipv6_address is defined %}
+Address={{ host_ipv6_address }}
+{% endif %}
+Gateway={{ host_gateway }}
+{% if host_gateway_ipv6 is defined %}
+Gateway={{ host_gateway_ipv6 }}
+{% endif %}
+DNS={{ host_dns }}
+{% if host_dns_ipv6 is defined %}
+DNS={{ host_dns_ipv6 }}
+{% endif %}
+IPv6AcceptRA=yes
+IPv6PrivacyExtensions={{ host_ipv6_privacy_extensions | default('no') }}
+LLMNR=yes
+MulticastDNS=yes
+LLDP=yes
+EmitLLDP=yes

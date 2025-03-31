@@ -3,9 +3,22 @@ data "incus_project" "default" {
   name = "default"
 }
 
-resource "incus_profile" "nas-container-apps" {
+resource "incus_instance" "nas-container-apps" {
   name = "nas-container-apps"
-  description = "NAS Container Apps profile"
+  description = "NAS Container Apps"
+  image = "images:ubuntu/oracular/cloud"
+  profiles = ["default", "base"]
+
+  config = {
+    "user.access_interface" = "eth0"
+    "raw.idmap" = <<-EOT
+      uid 568 568
+      uid 3000 3000
+      gid 568 568
+      gid 4000 4000
+      gid 3000 3000
+    EOT
+  }
 
   device {
     name = "eth0"
@@ -43,34 +56,6 @@ resource "incus_profile" "nas-container-apps" {
       source = "/mnt/main/fzymgc-house/incus/storage/container-apps/stacks"
       path = "/mnt/stacks"
     }
-  }
-
-  config = {
-    "boot.autostart" = true
-    "linux.kernel_modules" = "br_netfilter"
-    "security.nesting" = true
-    "security.syscalls.intercept.mknod" = true
-    "security.syscalls.intercept.setxattr" = true
-    "cloud-init.network-config" = file("${path.module}/cloud-init.network-config.yaml")
-    "cloud-init.user-data" = file("${path.module}/cloud-init.user-data.yaml")
-  }
-}
-
-resource "incus_instance" "nas-container-apps" {
-  name = "nas-container-apps"
-  description = "NAS Container Apps"
-  image = "images:ubuntu/oracular/cloud"
-  profiles = ["default", incus_profile.nas-container-apps.name]
-
-  config = {
-    "user.access_interface" = "eth0"
-    "raw.idmap" = <<-EOT
-      uid 568 568
-      uid 3000 3000
-      gid 568 568
-      gid 4000 4000
-      gid 3000 3000
-    EOT
   }
 
   wait_for {

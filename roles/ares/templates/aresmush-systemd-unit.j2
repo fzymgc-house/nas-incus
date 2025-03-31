@@ -1,0 +1,17 @@
+[Unit]
+Description=AresMUSH
+After=network.target
+Requires=valkey-server.service
+
+[Service]
+User=ares
+Group=ares
+WorkingDirectory=/home/ares/aresmush
+ExecStart=/usr/bin/bash --login -c "/home/ares/aresmush/bin/startares"
+ExecStop=/usr/bin/bash --login -c "/home/ares/aresmush/bin/killares"
+Restart=on-failure
+Type=oneshot
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

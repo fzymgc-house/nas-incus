@@ -1,4 +1,40 @@
 ---
+- name: Remove cloud init network config
+  ansible.builtin.file:
+    path: /etc/netplan/50-cloud-init.yaml
+    state: absent
+
+- name: Configure network eth0
+  ansible.builtin.template:
+    src: "eth-{{ network_eth0.type }}.network.j2"
+    dest: "/etc/systemd/network/eth0.network"
+  vars:
+    host_interface_name: "{{ network_eth0.interface_name }}"
+    host_ipv4_address: "{{ network_eth0.ipv4_address | default(omit) }}"
+    host_ipv6_address: "{{ network_eth0.ipv6_address | default(omit) }}"
+    host_gateway: "{{ network_eth0.gateway | default(omit) }}"
+    host_dns: "{{ network_eth0.dns | default(omit) }}"
+    host_ipv6_privacy_extensions: "{{ network_eth0.ipv6_privacy_extensions }}"
+  notify: reconfigure eth0
+  tags: network
+
+- name: Configure network eth1
+  ansible.builtin.template:
+    src: "eth-{{ network_eth1.type }}.network.j2"
+    dest: "/etc/systemd/network/eth1.network"
+  vars:
+    host_interface_name: "{{ network_eth1.interface_name }}"
+    host_ipv4_address: "{{ network_eth1.ipv4_address | default(omit) }}"
+    host_ipv6_address: "{{ network_eth1.ipv6_address | default(omit) }}"
+    host_gateway: "{{ network_eth1.gateway | default(omit) }}"
+    host_dns: "{{ network_eth1.dns | default(omit) }}"
+    host_ipv6_privacy_extensions: "{{ network_eth1.ipv6_privacy_extensions }}"
+  when: network_eth1 is defined
+  notify: reconfigure eth1
+  tags: network
+
+- meta: flush_handlers
+
 - name: Add packages
   ansible.builtin.apt:
     cache_valid_time: 3600
@@ -10,6 +46,15 @@
     cache_valid_time: 3600
     update_cache: true
   changed_when: false
+
+- name: Set git ceiling dirs
+  ansible.builtin.copy:
+    content: |
+      export GIT_CEILING_DIRECTORIES="/home"
+    dest: /etc/profile.d/git-ceiling-dirs.sh
+    mode: "0755"
+    owner: root
+    group: root
 
 - name: Create admin user
   ansible.builtin.user:

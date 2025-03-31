@@ -6,7 +6,7 @@ provider "incus" {
     name = "nas"
     scheme = "https"
     address = "192.168.20.200"
-    port = "3443"
+    port = "2443"
     token = var.incus_token
     default = true
   }

@@ -1,5 +1,5 @@
 {
-  email admin+ares+{{ansible_fqdn}}@sean.muxserver.net
+  email admin+ares+{{ansible_hostname}}@sean.muxserver.net
   log default {
     output stdout
     level DEBUG
@@ -10,7 +10,7 @@
   }
 }
 
-{{ansible_fqdn}}.{{tailscale_domain}} {
+{{ansible_hostname}}.{{tailscale_domain}} {
   encode zstd gzip
 
   @websockets {

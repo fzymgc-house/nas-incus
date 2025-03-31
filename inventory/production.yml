@@ -7,38 +7,61 @@ ungrouped:
       ansible_host: edge-node
 
 incus:
+  vars:
+    ansible_connection: community.general.incus
+    ansible_incus_remote: nas
+    ansible_become: false
+    ansible_user: root
   hosts:
     nas-app-proxy:
       ansible_hostname: nas-app-proxy
       ansible_host: nas-app-proxy.fzymgc.house
       ansible_fqdn: nas-app-proxy.fzymgc.house
-      ansible_user: fzymgc
-      ansible_become: true
       reboot_offset: 15m
       install_time: 01:30
       reboot_time: 02:00
+      network_eth0:
+        type: static
+        ipv4_address: 192.168.20.201/22
+        ipv6_address: 2600:4040:27d2:4802::201/64
+        gateway: 192.168.20.1
+        dns: 192.168.20.1
+        interface_name: eth0
+      network_eth1:
+        type: dhcp
+        interface_name: eth1
     nas-support:
       ansible_hostname: nas-support
       ansible_host: nas-support.fzymgc.house
       ansible_fqdn: nas-support.fzymgc.house
-      ansible_user: fzymgc
-      ansible_become: true
       reboot_offset: 15m
       install_time: 01:45
       reboot_time: 02:15
+      network_eth0:
+        type: dhcp
+        interface_name: eth0
+      network_eth1:
+        type: dhcp
+        interface_name: eth1
     nas-container-apps:
       ansible_hostname: nas-container-apps
       ansible_host: nas-container-apps.fzymgc.house
       ansible_fqdn: nas-container-apps.fzymgc.house
-      ansible_user: fzymgc
-      ansible_become: true
       reboot_offset: 15m
       install_time: 02:00
       reboot_time: 02:30
+      network_eth0:
+        type: static
+        interface_name: eth0
+        ipv4_address: 192.168.20.202/22
+        ipv6_address: 2600:4040:27d2:4802::202/64
+        gateway: 192.168.20.1
+        dns: 192.168.20.1
+      network_eth1:
+        type: dhcp
+        interface_name: eth1
     doorsportal1:
       ansible_hostname: doorsportal1
-      ansible_user: fzymgc
-      ansible_become: true
       ansible_host: doorsportal1.fzymgc.house
       ansible_fqdn: doorsportal1.fzymgc.house
       game_host_name: "{{ ansible_fqdn }}"
@@ -49,10 +72,11 @@ incus:
       reboot_offset: 15m
       install_time: 03:00
       reboot_time: 03:30
+      network_eth0:
+        type: dhcp
+        interface_name: eth0
     precipice:
       ansible_hostname: precipice
-      ansible_user: fzymgc
-      ansible_become: true
       ansible_host: precipice.fzymgc.house
       ansible_fqdn: precipice.fzymgc.house
       game_host_name: "{{ ansible_fqdn }}"
@@ -63,6 +87,9 @@ incus:
       reboot_offset: 15m
       install_time: 03:45
       reboot_time: 04:15
+      network_eth0:
+        type: dhcp
+        interface_name: eth0
 
 aresmush_servers:
   hosts:

@@ -1,0 +1,13 @@
+# system-networkd
+
+[Match]
+Name={{ host_interface_name }}
+
+[Network]
+DHCP=yes
+IPv6AcceptRA=yes
+IPv6PrivacyExtensions={{ host_ipv6_privacy_extensions | default('no') }}
+LLMNR=yes
+MulticastDNS=yes
+LLDP=yes
+EmitLLDP=yes
