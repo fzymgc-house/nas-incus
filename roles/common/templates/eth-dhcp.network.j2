@@ -6,8 +6,11 @@ Name={{ host_interface_name }}
 [Network]
 DHCP=yes
 IPv6AcceptRA=yes
-IPv6PrivacyExtensions={{ host_ipv6_privacy_extensions | default('no') }}
+IPv6PrivacyExtensions={{ host_ipv6_privacy_extensions }}
 LLMNR=yes
 MulticastDNS=yes
 LLDP=yes
 EmitLLDP=yes
+
+[DHCP]
+UseRoutes={{ use_dhcp_routes }}

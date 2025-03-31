@@ -45,8 +45,10 @@ resource "incus_network" "cbr0" {
   config = {
     "ipv4.address" = "10.209.210.1/24"
     "ipv4.nat" = "false"
+    "ipv4.routing" = "false"
     "ipv6.address" = "fd42:1b0c:1aa2:74e4::1/64"
     "ipv6.nat" = "false"
+    "ipv6.routing" = "false"
   }
 }
 
