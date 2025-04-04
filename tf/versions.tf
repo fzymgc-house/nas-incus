@@ -4,7 +4,7 @@ terraform {
   required_providers {
     incus = {
       source = "lxc/incus"
-      version = ">=0.3.0"
+      version = ">= 0.3.0"
     }
     ansible = {
       source = "ansible/ansible"
