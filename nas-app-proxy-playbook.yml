@@ -9,6 +9,12 @@
       tags: dnscrypt-proxy
     - role: caddy
       tags: caddy
+      vars:
+        use_local_resolvers: yes
+    - role: app-proxy-caddy
+      tags:
+      - caddy
+      - app-proxy-caddy
     - role: artis3n.tailscale.device
       vars:
       tailscale_authkey: "{{ lookup('community.general.onepassword', 'tailscale-oauth nas-app-proxy', field='password', vault='fzymgc-house') }}"

@@ -75,15 +75,22 @@
     zerossl_mac_key: "{{ lookup('community.general.onepassword', 'zerossl-eab-creds', field='password', vault='fzymgc-house') }}"
 
 - name: Configure caddy
-  ansible.builtin.template:
-    src: Caddyfile.j2
+  ansible.builtin.blockinfile:
     dest: /etc/caddy/Caddyfile
     mode: "0640"
     owner: caddy
     group: caddy
     backup: true
-    variable_start_string: "%["
-    variable_end_string: "]%"
+    marker: "# {mark} BASE CADDYFILE CONFIG"
+    insertbefore: BOF
+    create: true
+    content: |
+      {
+        log default {
+          output stdout
+        }
+        debug
+      }
   notify: restart caddy
 
 - name: Enable caddy service

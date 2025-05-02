@@ -1,0 +1,22 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for capps-portainer
+
+- name: Create portainer data directory
+  ansible.builtin.file:
+    path: "{{ host_data_base_dir }}/portainer"
+    owner: "{{ host_data_dir_owner }}"
+    group: "{{ host_data_dir_group }}"
+    mode: "{{ host_data_dir_mode }}"
+    state: directory
+
+- name: Run portainer as a docker container
+  community.docker.docker_container:
+    name: portainer
+    image: portainer/portainer-ce:lts
+    volumes:
+      - "{{ host_data_base_dir }}/portainer:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    ports:
+      - "{{ ansible_eth1.ipv4.address }}:9443:9443"
+      - "{{ ansible_eth1.ipv4.address }}:8000:8000"

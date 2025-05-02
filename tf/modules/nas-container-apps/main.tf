@@ -13,10 +13,7 @@ resource "incus_instance" "nas-container-apps" {
     "user.access_interface" = "eth0"
     "raw.idmap" = <<-EOT
       uid 568 568
-      uid 3000 3000
       gid 568 568
-      gid 4000 4000
-      gid 3000 3000
     EOT
   }
 

@@ -16,6 +16,8 @@
     host_dns: "{{ network_eth0.dns | default(omit) }}"
     host_ipv6_privacy_extensions: "{{ network_eth0.ipv6_privacy_extensions | default('no') }}"
     use_dhcp_routes: "{{ network_eth0.use_dhcp_routes | default('yes') }}"
+    dns_address: "{{ network_eth0.dns_address | default(omit) }}"
+    dns_domain: "{{ network_eth0.dns_domain | default(omit) }}"
   notify: reconfigure eth0
   tags: network
 
@@ -31,6 +33,8 @@
     host_dns: "{{ network_eth1.dns | default(omit) }}"
     host_ipv6_privacy_extensions: "{{ network_eth1.ipv6_privacy_extensions | default('no') }}"
     use_dhcp_routes: "{{ network_eth1.use_dhcp_routes | default('no') }}"
+    dns_address: "{{ network_eth1.dns_address | default(omit) }}"
+    dns_domain: "{{ network_eth1.dns_domain | default(omit) }}"
   when: network_eth1 is defined
   notify: reconfigure eth1
   tags: network

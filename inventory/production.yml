@@ -30,6 +30,9 @@ incus:
       network_eth1:
         type: dhcp
         interface_name: eth1
+        use_dhcp_routes: no
+        dns_address: "{{ ansible_eth1.ipv4.address }}"
+        dns_domain: incus
     nas-support:
       ansible_hostname: nas-support
       ansible_host: nas-support.fzymgc.house
@@ -43,6 +46,9 @@ incus:
       network_eth1:
         type: dhcp
         interface_name: eth1
+        use_dhcp_routes: no
+        dns_address: "{{ ansible_eth1.ipv4.address }}"
+        dns_domain: incus
     nas-container-apps:
       ansible_hostname: nas-container-apps
       ansible_host: nas-container-apps.fzymgc.house
@@ -60,6 +66,9 @@ incus:
       network_eth1:
         type: dhcp
         interface_name: eth1
+        use_dhcp_routes: no
+        dns_address: "{{ ansible_eth1.ipv4.address }}"
+        dns_domain: incus
     doorsportal1:
       ansible_hostname: doorsportal1
       ansible_host: doorsportal1.fzymgc.house

@@ -1,0 +1,10 @@
+# staging
+acme_ca: https://acme-staging-v02.api.letsencrypt.org/directory
+
+# zerossl
+# acme_ca: https://acme.zerossl.com/v2/DV90
+
+# production
+# acme_ca: https://acme-v02.api.letsencrypt.org/directory
+
+use_local_resolvers: no
