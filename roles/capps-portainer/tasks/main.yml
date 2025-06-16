@@ -13,7 +13,7 @@
 - name: Run portainer as a docker container
   community.docker.docker_container:
     name: portainer
-    image: portainer/portainer-ce:lts@sha256:ebead33595e425f88b1d02a74e4cc65a6d295e96c3643bb176dca7cb64bc36b0
+    image: portainer/portainer-ce:lts@sha256:1b4759b6fd66cec0a6c02c780529d67e8dd0788a4fbd5b541f172daffdf991b9
     volumes:
       - "{{ host_data_base_dir }}/portainer:/data"
       - "/var/run/docker.sock:/var/run/docker.sock"
