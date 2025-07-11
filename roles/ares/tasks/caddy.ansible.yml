@@ -33,7 +33,7 @@
 
 - name: Apt update
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
   changed_when: false
 
 - name: Allow caddy to talk to tailscaled
@@ -41,7 +41,7 @@
     path: /etc/default/tailscaled
     line: TS_PERMIT_CERT_UID=caddy
     insertafter: EOF
-  notify: restart tailscaled
+  notify: Restart tailscaled
 
 - name: Install caddy
   ansible.builtin.apt:
@@ -71,14 +71,14 @@
   ansible.builtin.template:
     src: Caddyfile.j2
     dest: /etc/caddy/Caddyfile
-    mode: 0640
+    mode: "0640"
     owner: caddy
     group: caddy
-    backup: yes
-  notify: restart caddy
+    backup: true
+  notify: Restart caddy
 
 - name: Enable caddy service
   ansible.builtin.systemd:
     name: caddy
-    enabled: yes
+    enabled: true
     state: started

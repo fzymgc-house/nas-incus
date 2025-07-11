@@ -33,7 +33,7 @@
     owner: root
     group: root
     mode: "0600"
-  notify: postmap mailgun_passwd
+  notify: Postmap mailgun_passwd
 
 - name: Configure postfix
   ansible.builtin.template:
@@ -42,4 +42,4 @@
     owner: root
     group: root
     mode: "0644"
-  notify: restart postfix
+  notify: Restart postfix

@@ -67,7 +67,7 @@
       update-alternatives --install /usr/bin/caddy caddy /usr/bin/caddy.default 10
       update-alternatives --install /usr/bin/caddy caddy /usr/bin/caddy.custom 50
     creates: /usr/bin/caddy.custom
-  notify: restart caddy
+  notify: Restart caddy
 
 - ansible.builtin.set_fact:
     cloudflare_api_token: "{{ lookup('community.general.onepassword', 'cloudflare-api-token', field='password', vault='fzymgc-house') }}"
@@ -91,7 +91,7 @@
         }
         debug
       }
-  notify: restart caddy
+  notify: Restart caddy
 
 - name: Enable caddy service
   ansible.builtin.systemd:

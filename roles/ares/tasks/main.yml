@@ -17,7 +17,7 @@
   ansible.builtin.user:
     name: ares
     shell: /bin/bash
-    append: yes
+    append: true
     uid: 2000
     group: ares
     groups: www-data,valkey,caddy
@@ -33,13 +33,13 @@
     owner: ares
     group: ares
     state: directory
-    recurse: yes
+    recurse: true
   when: (ares_profile_exists.stat.exists and ares_profile_exists.stat.pw_name != "ares") or ( not ares_profile_exists.stat.exists )
 
 - name: Ensure ares home dir has the right mode
   ansible.builtin.file:
     path: /home/ares
-    mode: 0755
+    mode: "0755"
     owner: ares
     group: ares
     state: directory
@@ -48,7 +48,7 @@
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: /home/ares/{{ item }}
-    mode: 0644
+    mode: "0644"
     owner: ares
     group: ares
     force: false
@@ -59,8 +59,8 @@
   ansible.builtin.user:
     name: caddy
     groups: ares
-    append: yes
-  notify: restart caddy
+    append: true
+  notify: Restart caddy
 
 - name: Add github public keys to admin user
   ansible.posix.authorized_key:
@@ -72,7 +72,7 @@
   ansible.builtin.copy:
     content: "{{ item }} ALL=(ALL) NOPASSWD:ALL"
     dest: /etc/sudoers.d/{{ item }}
-    mode: 0440
+    mode: "0440"
   with_items:
   - ares
 
@@ -147,7 +147,7 @@
 - name: Ensure bin dir files are executable
   ansible.builtin.file:
     path: "{{ item }}"
-    mode: 0755
+    mode: "0755"
     owner: ares
     group: ares
   with_fileglob: /home/ares/aresmush/bin/*
@@ -155,7 +155,7 @@
 - name: Ensure web-portal bin dir files are executable
   ansible.builtin.file:
     path: "{{ item }}"
-    mode: 0755
+    mode: "0755"
     owner: ares
     group: ares
   with_fileglob: /home/ares/ares-webportal/bin/*
@@ -166,17 +166,17 @@
     owner: valkey
     group: valkey
     state: directory
-    recurse: yes
+    recurse: true
 
 - name: Configure valkey
   ansible.builtin.template:
     src: valkey.conf.j2
     dest: /etc/valkey/valkey.conf
-    mode: 0640
+    mode: "0640"
     owner: valkey
     group: valkey
-    backup: yes
-  notify: restart valkey
+    backup: true
+  notify: Restart valkey
   tags:
   - valkey
 
@@ -184,7 +184,7 @@
   ansible.builtin.file:
     path: /etc/valkey/REDIS_MIGRATION
     state: absent
-  notify: restart valkey
+  notify: Restart valkey
   tags:
   - valkey
 
@@ -213,7 +213,7 @@
   ansible.builtin.template:
     src: ares-secrets.yml.j2
     dest: /home/ares/aresmush/game/config/secrets.yml
-    mode: 0600
+    mode: "0600"
     owner: ares
     group: ares
 
@@ -222,7 +222,7 @@
     path: /home/ares/aresmush/game/config/database.yml
     regexp: ^path
     line: 'path: "/var/lib/valkey/dump.rdb"'
-    backup: yes
+    backup: true
 
 - name: Do an initial wipe of the database
   become_user: ares
@@ -261,7 +261,7 @@
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: /home/ares/{{ item }}
-    mode: 0755
+    mode: "0755"
     owner: ares
     group: ares
   with_items:
@@ -272,10 +272,10 @@
   ansible.builtin.template:
     src: aresmush-systemd-unit.j2
     dest: /etc/systemd/system/aresmush.service
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
-  notify: reload systemd
+  notify: Reload systemd
 
 - name: Enable aresmush systemd unit
   ansible.builtin.systemd:

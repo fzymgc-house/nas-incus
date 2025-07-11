@@ -21,7 +21,7 @@
     dns_address: "{{ network_eth0.dns_address | default(omit) }}"
     dns_domain: "{{ network_eth0.dns_domain | default(omit) }}"
   notify:
-    - reconfigure eth0
+    - Reconfigure eth0
     - Restart systemd-resolved
   tags: network
 
@@ -41,8 +41,8 @@
     dns_domain: "{{ network_eth1.dns_domain | default(omit) }}"
   when: network_eth1 is defined
   notify:
-    - reconfigure eth1
-    - restart systemd-resolved
+    - Reconfigure eth1
+    - Restart systemd-resolved
   tags: network
 
 - meta: flush_handlers
@@ -167,7 +167,7 @@
     dest: "/etc/fail2ban/jail.d/{{ item }}.conf"
   with_items:
     - sshd
-  notify: restart fail2ban
+  notify: Restart fail2ban
   tags: fail2ban
 
 - name: Configure ssh
@@ -176,4 +176,4 @@
     mode: "0600"
     owner: root
     group: root
-  notify: restart ssh
+  notify: Restart ssh

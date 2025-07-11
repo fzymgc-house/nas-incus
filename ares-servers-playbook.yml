@@ -1,6 +1,6 @@
 - name: Install Ares Servers
   hosts: aresmush_servers
-  become: yes
+  become: true
   tags:
     - ares-servers
   roles:

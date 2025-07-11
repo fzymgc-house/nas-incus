@@ -1,31 +1,31 @@
 ---
-- name: restart postfix
+- name: Restart postfix
   ansible.builtin.systemd:
     name: postfix
     state: restarted
 
-- name: postmap mailgun_passwd
+- name: Postmap mailgun_passwd
   ansible.builtin.command: postmap /etc/postfix/sasl/mailgun_passwd
-  notify: restart postfix
+  notify: Restart postfix
 
-- name: restart fail2ban
+- name: Restart fail2ban
   ansible.builtin.systemd:
     name: fail2ban
     state: restarted
 
-- name: restart ssh
+- name: Restart ssh
   ansible.builtin.systemd:
     name: ssh
     state: restarted
 
-- name: reconfigure eth0
+- name: Reconfigure eth0
   ansible.builtin.shell:
     cmd: |
       systemctl daemon-reload
       networkctl reload
       networkctl reconfigure -a eth0
 
-- name: reconfigure eth1
+- name: Reconfigure eth1
   ansible.builtin.shell:
     cmd: |
       systemctl daemon-reload

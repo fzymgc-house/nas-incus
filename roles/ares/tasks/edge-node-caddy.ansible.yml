@@ -9,8 +9,8 @@
           header_up Host {upstream_hostport}
         }
       }
-    mode: 0644
+    mode: "0644"
     owner: caddy
     group: caddy
   delegate_to: edge-node
-  notify: restart edge-node caddy
+  notify: Restart edge-node caddy

@@ -1,30 +1,30 @@
-- name: restart caddy
+- name: Restart caddy
   ansible.builtin.service:
     name: caddy
     state: restarted
 
-- name: restart edge-node caddy
+- name: Restart edge-node caddy
   ansible.builtin.service:
     name: caddy
     state: restarted
   delegate_to: edge-node
 
-- name: restart tailscaled
+- name: Restart tailscaled
   ansible.builtin.service:
     name: tailscaled
     state: restarted
 
-- name: restart edge-node haproxy
+- name: Restart edge-node haproxy
   ansible.builtin.service:
     name: haproxy
     state: restarted
   delegate_to: edge-node
 
-- name: restart valkey
+- name: Restart valkey
   ansible.builtin.service:
     name: valkey
     state: restarted
 
-- name: reload systemd
+- name: Reload systemd
   ansible.builtin.systemd:
     daemon_reload: true

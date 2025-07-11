@@ -7,4 +7,4 @@ acme_ca: https://acme-staging-v02.api.letsencrypt.org/directory
 # production
 # acme_ca: https://acme-v02.api.letsencrypt.org/directory
 
-use_local_resolvers: no
+use_local_resolvers: false

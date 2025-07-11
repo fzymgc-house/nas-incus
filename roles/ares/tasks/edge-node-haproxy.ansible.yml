@@ -2,12 +2,12 @@
   ansible.builtin.template:
     src: haproxy.cfg.j2
     dest: "/etc/haproxy/config/{{ game_host_name }}.cfg"
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
-    backup: yes
+    backup: true
   tags:
   - haproxy
   - edge-node
   delegate_to: edge-node
-  notify: restart edge-node haproxy
+  notify: Restart edge-node haproxy

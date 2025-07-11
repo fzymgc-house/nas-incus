@@ -10,7 +10,7 @@
     - role: caddy
       tags: caddy
       vars:
-        use_local_resolvers: yes
+        use_local_resolvers: true
     - role: app-proxy-caddy
       tags:
       - caddy

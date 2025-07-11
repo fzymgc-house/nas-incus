@@ -27,7 +27,7 @@
       )) }}"
     validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
   notify:
-    - restart caddy
+    - Restart caddy
 
 - name: Configure nas-storj site
   ansible.builtin.blockinfile:
@@ -49,7 +49,7 @@
       )) }}"
     validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
   notify:
-    - restart caddy
+    - Restart caddy
 
 - name: Configure nas-syncthing-sean site
   ansible.builtin.blockinfile:
@@ -71,7 +71,7 @@
       )) }}"
     validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
   notify:
-    - restart caddy
+    - Restart caddy
 
 - name: Configure nas-storj site
   ansible.builtin.blockinfile:
@@ -93,7 +93,7 @@
       )) }}"
     validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
   notify:
-    - restart caddy
+    - Restart caddy
 
 - name: Configure nas site
   ansible.builtin.blockinfile:
@@ -116,7 +116,7 @@
       )) }}"
     validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
   notify:
-    - restart caddy
+    - Restart caddy
 
 - name: Configure searxng site
   ansible.builtin.blockinfile:
@@ -140,5 +140,5 @@
       )) }}"
     validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
   notify:
-    - restart caddy
+    - Restart caddy
 
