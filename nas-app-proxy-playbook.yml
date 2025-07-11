@@ -15,7 +15,7 @@
       tags:
       - caddy
       - app-proxy-caddy
-    - role: artis3n.tailscale.device
+    - role: artis3n.tailscale.machine
       vars:
       tailscale_authkey: "{{ lookup('community.general.onepassword', 'tailscale-oauth nas-app-proxy', field='password', vault='fzymgc-house') }}"
       tailscale_args: "--ssh --reset"

@@ -31,3 +31,8 @@
       systemctl daemon-reload
       networkctl reload
       networkctl reconfigure -a eth1
+
+- name: Restart systemd-resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: restarted

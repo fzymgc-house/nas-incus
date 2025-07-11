@@ -34,7 +34,7 @@
         docker_compose_package: docker-compose-plugin
         docker_compose_package_state: present
       tags: docker
-    - role: artis3n.tailscale.device
+    - role: artis3n.tailscale.machine
       vars:
         tailscale_authkey: "{{ lookup('community.general.onepassword', 'tailscale-oauth nas-app-proxy', field='password', vault='fzymgc-house') }}"
         tailscale_args: "--ssh --reset"

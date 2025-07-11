@@ -3,6 +3,8 @@
   ansible.builtin.file:
     path: /etc/netplan/50-cloud-init.yaml
     state: absent
+  notify:
+    - Restart systemd-resolved
 
 - name: Configure network eth0
   ansible.builtin.template:
@@ -18,7 +20,9 @@
     use_dhcp_routes: "{{ network_eth0.use_dhcp_routes | default('yes') }}"
     dns_address: "{{ network_eth0.dns_address | default(omit) }}"
     dns_domain: "{{ network_eth0.dns_domain | default(omit) }}"
-  notify: reconfigure eth0
+  notify:
+    - reconfigure eth0
+    - Restart systemd-resolved
   tags: network
 
 - name: Configure network eth1
@@ -36,7 +40,9 @@
     dns_address: "{{ network_eth1.dns_address | default(omit) }}"
     dns_domain: "{{ network_eth1.dns_domain | default(omit) }}"
   when: network_eth1 is defined
-  notify: reconfigure eth1
+  notify:
+    - reconfigure eth1
+    - restart systemd-resolved
   tags: network
 
 - meta: flush_handlers
