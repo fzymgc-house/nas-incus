@@ -4,14 +4,14 @@ data "incus_project" "default" {
 }
 
 resource "incus_instance" "nas-container-apps" {
-  name = "nas-container-apps"
+  name        = "nas-container-apps"
   description = "NAS Container Apps"
-  image = "images:ubuntu/oracular/cloud"
-  profiles = ["default", "base"]
+  image       = "images:ubuntu/oracular/cloud"
+  profiles    = ["default", "base"]
 
   config = {
     "user.access_interface" = "eth0"
-    "raw.idmap" = <<-EOT
+    "raw.idmap"             = <<-EOT
       uid 568 568
       gid 568 568
     EOT
@@ -22,8 +22,8 @@ resource "incus_instance" "nas-container-apps" {
     type = "nic"
     properties = {
       nictype = "macvlan"
-      parent = "bond0"
-      hwaddr = "00:16:3e:ae:aa:01"
+      parent  = "bond0"
+      hwaddr  = "00:16:3e:ae:aa:01"
     }
   }
 
@@ -31,9 +31,9 @@ resource "incus_instance" "nas-container-apps" {
     name = "eth1"
     type = "nic"
     properties = {
-      parent = var.container_bridge_network_name
+      parent  = var.container_bridge_network_name
       nictype = "bridged"
-      hwaddr = "00:16:3e:ae:ab:01"
+      hwaddr  = "00:16:3e:ae:ab:01"
     }
   }
 
@@ -42,7 +42,7 @@ resource "incus_instance" "nas-container-apps" {
     type = "disk"
     properties = {
       source = "/mnt/main/fzymgc-house/incus/storage/container-apps/data"
-      path = "/mnt/data"
+      path   = "/mnt/data"
     }
   }
 
@@ -51,13 +51,13 @@ resource "incus_instance" "nas-container-apps" {
     type = "disk"
     properties = {
       source = "/mnt/main/fzymgc-house/incus/storage/container-apps/stacks"
-      path = "/mnt/stacks"
+      path   = "/mnt/stacks"
     }
   }
 
   wait_for {
-    type = "ipv4"
-    nic = "eth0"
+    type  = "ipv4"
+    nic   = "eth0"
     delay = "30s"
   }
 }

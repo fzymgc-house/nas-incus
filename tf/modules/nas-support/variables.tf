@@ -2,5 +2,5 @@
 
 variable "container_bridge_network_name" {
   description = "Name of the container bridge network"
-  type = string
+  type        = string
 }

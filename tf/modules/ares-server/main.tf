@@ -5,14 +5,14 @@ data "incus_project" "default" {
 
 
 resource "incus_instance" "ares-server" {
-  name = var.server_name
+  name        = var.server_name
   description = var.server_description
-  image = format("images:%s", var.server_image)
-  profiles = ["default", "base"]
+  image       = format("images:%s", var.server_image)
+  profiles    = ["default", "base"]
 
   config = {
     "user.access_interface" = "eth0"
-    "raw.idmap" = <<-EOT
+    "raw.idmap"             = <<-EOT
       uid 568 568
       gid 568 568
     EOT
@@ -23,8 +23,8 @@ resource "incus_instance" "ares-server" {
     type = "nic"
     properties = {
       nictype = "macvlan"
-      parent = "bond0"
-      hwaddr = var.hwaddr
+      parent  = "bond0"
+      hwaddr  = var.hwaddr
     }
   }
 
@@ -33,7 +33,7 @@ resource "incus_instance" "ares-server" {
     type = "disk"
     properties = {
       source = var.server_source_dir
-      path = "/home/ares"
+      path   = "/home/ares"
     }
   }
 
@@ -42,13 +42,13 @@ resource "incus_instance" "ares-server" {
     type = "disk"
     properties = {
       source = var.server_database_dir
-      path = "/var/lib/valkey"
+      path   = "/var/lib/valkey"
     }
   }
 
   wait_for {
-    type = "ipv4"
-    nic = "eth0"
+    type  = "ipv4"
+    nic   = "eth0"
     delay = "30s"
   }
 }

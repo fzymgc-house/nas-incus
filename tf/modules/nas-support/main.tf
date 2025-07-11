@@ -4,14 +4,14 @@ data "incus_project" "default" {
 }
 
 resource "incus_instance" "nas-support" {
-  name = "nas-support"
+  name        = "nas-support"
   description = "NAS Support"
-  image = "images:ubuntu/oracular/cloud"
-  profiles = ["default", "base"]
+  image       = "images:ubuntu/oracular/cloud"
+  profiles    = ["default", "base"]
 
   config = {
     "user.access_interface" = "eth0"
-    "raw.idmap" = <<-EOT
+    "raw.idmap"             = <<-EOT
       uid 568 568
       uid 3000 3000
       gid 568 568
@@ -25,8 +25,8 @@ resource "incus_instance" "nas-support" {
     type = "nic"
     properties = {
       nictype = "macvlan"
-      parent = "bond0"
-      hwaddr = "00:16:3e:ae:ff:00"
+      parent  = "bond0"
+      hwaddr  = "00:16:3e:ae:ff:00"
     }
   }
 
@@ -34,9 +34,9 @@ resource "incus_instance" "nas-support" {
     name = "eth1"
     type = "nic"
     properties = {
-      parent = var.container_bridge_network_name
+      parent  = var.container_bridge_network_name
       nictype = "bridged"
-      hwaddr = "00:16:3e:ae:ff:01"
+      hwaddr  = "00:16:3e:ae:ff:01"
     }
   }
 
@@ -44,8 +44,8 @@ resource "incus_instance" "nas-support" {
     name = "main"
     type = "disk"
     properties = {
-      source = "/mnt/main"
-      path = "/mnt/main"
+      source    = "/mnt/main"
+      path      = "/mnt/main"
       recursive = true
     }
   }
@@ -54,15 +54,15 @@ resource "incus_instance" "nas-support" {
     name = "apps"
     type = "disk"
     properties = {
-      source = "/mnt/apps"
-      path = "/mnt/apps"
+      source    = "/mnt/apps"
+      path      = "/mnt/apps"
       recursive = true
     }
   }
 
   wait_for {
-    type = "ipv4"
-    nic = "eth0"
+    type  = "ipv4"
+    nic   = "eth0"
     delay = "30s"
   }
 }

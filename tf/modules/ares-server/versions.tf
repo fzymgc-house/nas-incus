@@ -5,11 +5,11 @@ terraform {
 
   required_providers {
     incus = {
-      source = "lxc/incus"
+      source  = "lxc/incus"
       version = ">= 0.3.0"
     }
     onepassword = {
-      source = "1Password/onepassword"
+      source  = "1Password/onepassword"
       version = ">=2.1.2"
     }
   }
