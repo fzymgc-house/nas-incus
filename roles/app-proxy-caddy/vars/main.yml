@@ -1,9 +1,4 @@
-packages_to_install:
-  - curl
-  - debian-keyring
-  - debian-archive-keyring
-  - apt-transport-https
-  - ca-certificates
+# Package list moved to defaults/main.yml as app_proxy_caddy_packages_to_install
 
 searxng_site_additional_config: |
   @api {

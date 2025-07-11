@@ -1,0 +1,9 @@
+---
+# Default variables for app-proxy-caddy role
+
+app_proxy_caddy_packages_to_install:
+  - curl
+  - debian-keyring
+  - debian-archive-keyring
+  - apt-transport-https
+  - ca-certificates

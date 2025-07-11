@@ -19,7 +19,7 @@
 
 - name: Install packages for mail
   ansible.builtin.apt:
-    name: "{{ packages_to_install_for_mail }}"
+    name: "{{ common_packages_to_install_for_mail }}"
     state: latest
   tags:
     - packages

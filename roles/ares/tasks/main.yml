@@ -1,7 +1,7 @@
 ---
 - name: Install packages
   ansible.builtin.package:
-    name: "{{ packages_to_install }}"
+    name: "{{ ares_packages_to_install }}"
     state: present
 
 - name: Include caddy tasks

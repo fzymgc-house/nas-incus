@@ -2,7 +2,7 @@
 - name: Add packages
   ansible.builtin.apt:
     cache_valid_time: 3600
-    name: "{{ packages_to_install }}"
+    name: "{{ caddy_packages_to_install }}"
     state: present
 
 - name: Add caddy repos

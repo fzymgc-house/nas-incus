@@ -1,0 +1,23 @@
+---
+# Default variables for ares role
+
+ares_packages_to_install:
+  - autoconf
+  - automake
+  - binutils
+  - bison
+  - build-essential
+  - dialog
+  - fish
+  - git
+  - nodejs
+  - npm
+  - python3
+  - ruby-bundler
+  - ruby-dev
+  - unattended-upgrades
+  - uuid
+  - valkey
+  - valkey-redis-compat
+
+ruby_version: 3.1.2
