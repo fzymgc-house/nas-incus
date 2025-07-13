@@ -155,7 +155,7 @@
   tags: mail
 
 - name: Configure fail2ban
-  ansible.builtin.service:
+  ansible.builtin.systemd:
     name: fail2ban
     state: started
     enabled: true

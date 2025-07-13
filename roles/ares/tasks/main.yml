@@ -90,16 +90,16 @@
   ansible.builtin.shell:
     cmd: |
       source /home/ares/.rvm/scripts/rvm
-      rvm install {{ ruby_version }}
-      rvm --default use {{ ruby_version }}
-    creates:  /home/ares/.rvm/rubies/ruby-{{ ruby_version }}/bin/ruby
+      rvm install {{ ares_ruby_version }}
+      rvm --default use {{ ares_ruby_version }}
+    creates:  /home/ares/.rvm/rubies/ruby-{{ ares_ruby_version }}/bin/ruby
 
 - name: Update .profile with rvm config
   ansible.builtin.blockinfile:
     dest: /home/ares/.profile
     block: |
       source /home/ares/.rvm/scripts/rvm
-      rvm --default use {{ ruby_version }}
+      rvm --default use {{ ares_ruby_version }}
     marker: "# {mark} rvm ANSIBLE MANAGED BLOCK"
 
 - name: Install required gems
@@ -109,7 +109,7 @@
       source /home/ares/.rvm/scripts/rvm
       gem install bundler
       gem install rake
-    creates: /home/ares/.rvm/rubies/ruby-{{ ruby_version }}/bin/bundler
+    creates: /home/ares/.rvm/rubies/ruby-{{ ares_ruby_version }}/bin/bundler
 
 - name: Declare safe git dirs
   become_user: ares
@@ -197,7 +197,7 @@
     cmd: |
       cd ~/aresmush
       source /home/ares/.rvm/scripts/rvm
-      rvm use {{ ruby_version }}
+      rvm use {{ ares_ruby_version }}
       bin/configure host_name={{ game_host_name }}.{{ game_host_domain }}
       touch game/.configured
     creates: /home/ares/aresmush/game/.configured
@@ -230,7 +230,7 @@
     cmd: |
       cd ~/aresmush
       source /home/ares/.rvm/scripts/rvm
-      rvm use {{ ruby_version }}
+      rvm use {{ ares_ruby_version }}
       bin/wipedb && touch game/.dbinitialized
     creates: /home/ares/aresmush/game/.dbinitialized
 
@@ -252,7 +252,7 @@
     cmd: |
       cd ~/aresmush
       source /home/ares/.rvm/scripts/rvm
-      rvm use {{ ruby_version }}
+      rvm use {{ ares_ruby_version }}
       bundle exec rake initmigrations
       touch game/.dbinitialmigrations-complete
     creates: /home/ares/aresmush/game/.dbinitialmigrations-complete

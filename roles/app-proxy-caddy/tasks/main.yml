@@ -16,7 +16,7 @@
     insertafter: EOF
     append_newline: true
     create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%',
+    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
       template_vars=dict(
         site_fqdn='nas-portainer.fzymgc.house',
         site_upstream_url='https://nas-container-apps.incus:9443',
@@ -39,7 +39,7 @@
     insertafter: EOF
     append_newline: true
     create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%',
+    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
       template_vars=dict(
         site_fqdn='nas-storj.fzymgc.house',
         site_upstream_url='http://192.168.20.200:20909',
@@ -61,7 +61,7 @@
     insertafter: EOF
     append_newline: true
     create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%',
+    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
       template_vars=dict(
         site_fqdn='nas-syncthing-sean.fzymgc.house',
         site_upstream_url='http://192.168.20.200:20910',
@@ -83,7 +83,7 @@
     insertafter: EOF
     append_newline: true
     create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%',
+    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
       template_vars=dict(
         site_fqdn='nas-storj.fzymgc.house',
         site_upstream_url='http://192.168.20.200:20909',
@@ -105,7 +105,7 @@
     insertafter: EOF
     append_newline: true
     create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%',
+    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
       template_vars=dict(
         site_fqdn='nas.fzymgc.house',
         site_upstream_url='https://192.168.20.200:444',
@@ -128,7 +128,7 @@
     insertafter: EOF
     append_newline: true
     create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%',
+    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
       template_vars=dict(
         site_fqdn='searxng.fzymgc.house',
         site_upstream_url='https://192.168.20.200:8888',
