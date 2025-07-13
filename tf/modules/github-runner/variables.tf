@@ -37,7 +37,7 @@ variable "memory_limit" {
   default     = "8GiB"
   
   validation {
-    condition     = can(regex("^[0-9]+(\.?[0-9]+)?(GiB|MiB)$", var.memory_limit))
+    condition     = can(regex("^[0-9]+(\\.?[0-9]+)?(GiB|MiB)$", var.memory_limit))
     error_message = "Memory limit must be in format like '8GiB' or '512MiB'."
   }
 }
@@ -48,7 +48,7 @@ variable "disk_size" {
   default     = "50GiB"
   
   validation {
-    condition     = can(regex("^[0-9]+(\.?[0-9]+)?(GiB|MiB|TiB)$", var.disk_size))
+    condition     = can(regex("^[0-9]+(\\.?[0-9]+)?(GiB|MiB|TiB)$", var.disk_size))
     error_message = "Disk size must be in format like '50GiB', '100MiB', or '1TiB'."
   }
 }

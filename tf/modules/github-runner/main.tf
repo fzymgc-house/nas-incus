@@ -1,7 +1,3 @@
-data "incus_storage_pool" "default" {
-  name = var.storage_pool
-}
-
 data "incus_profile" "base" {
   name = "base"
 }
@@ -43,7 +39,7 @@ resource "incus_instance" "github_runner" {
     type = "disk"
     properties = {
       path = "/home/runner/workspace"
-      pool = data.incus_storage_pool.default.name
+      pool = var.storage_pool
       size = var.disk_size
     }
   }
