@@ -35,11 +35,18 @@ This plan outlines the implementation of a local GitHub Actions runner using Inc
 
 ## Task Tracking
 
-1. ✅ Create Terraform module for GitHub runner container (PR: feat/github-runner-terraform-module)
+1. ✅ Create Terraform module for GitHub runner container (PR #16: feat/github-runner-terraform-module)
    - Created module structure in `tf/modules/github-runner/`
    - Configured container with 4 CPU cores, 8GB RAM, 50GB storage
    - Internal network only for security
    - Integrated into main.tf
+   - **PR Review Fixes Applied:**
+     - Fixed naming inconsistency (runner_name default now "runner")
+     - Added variable validation for all resource parameters
+     - Replaced hardcoded storage pool with data source
+     - Pinned Ubuntu image version (20250712_07:42)
+     - Created comprehensive module README.md
+     - Removed unused data source
 2. Create cloud-init profile for runner initialization
 3. Create Ansible role for GitHub runner setup
 4. Add runner registration with GitHub organization/repo

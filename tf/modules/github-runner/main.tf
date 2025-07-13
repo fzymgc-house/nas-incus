@@ -1,12 +1,16 @@
-data "incus_project" "default" {
-  name = "default"
+data "incus_storage_pool" "default" {
+  name = var.storage_pool
+}
+
+data "incus_profile" "base" {
+  name = "base"
 }
 
 resource "incus_instance" "github_runner" {
   count       = var.runner_count
   name        = var.runner_count > 1 ? "${var.runner_name}-${format("%02d", count.index + 1)}" : var.runner_name
   description = "GitHub Actions Runner ${count.index + 1}"
-  image       = "images:ubuntu/oracular/cloud"
+  image       = var.container_image
   profiles    = ["default", "base"]
 
   config = {
@@ -35,7 +39,7 @@ resource "incus_instance" "github_runner" {
     type = "disk"
     properties = {
       path = "/home/runner/workspace"
-      pool = "incus-lvm-thinpool"
+      pool = data.incus_storage_pool.default.name
       size = var.disk_size
     }
   }
