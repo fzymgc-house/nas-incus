@@ -33,3 +33,18 @@ resource "incus_profile" "base" {
   }
 }
 
+resource "incus_profile" "github_runner" {
+  name        = "github-runner"
+  description = "GitHub Actions Runner profile"
+
+  config = {
+    "boot.autostart"                       = true
+    "linux.kernel_modules"                 = "br_netfilter,overlay"
+    "security.nesting"                     = true
+    "security.syscalls.intercept.mknod"    = true
+    "security.syscalls.intercept.setxattr" = true
+    "security.privileged"                  = true  # Required for Docker-in-Docker
+    "cloud-init.user-data"                 = file("${path.module}/github-runner/cloud-init.user-data.yaml")
+  }
+}
+

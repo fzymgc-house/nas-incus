@@ -84,7 +84,7 @@ This module implements several security best practices:
 
 - Incus must be installed and configured
 - The specified bridge network must exist
-- The base profile must be configured with cloud-init
+- The base and github-runner profiles must exist (created by profiles module)
 - Storage pool must exist and have sufficient space
 
 ## Integration with GitHub
