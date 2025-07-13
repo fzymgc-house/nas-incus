@@ -182,3 +182,9 @@ incus exec <container> -- cat /var/log/cloud-init-output.log
 # Ansible debug
 ansible-playbook main.yml --check --diff --limit <host>
 ```
+
+### Required paths
+* On a mac ensure that the following paths are searched for commands:
+  * /opt/homebrew/bin
+  * /opt/homebrew/sbin
+
