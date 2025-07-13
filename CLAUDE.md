@@ -188,3 +188,17 @@ ansible-playbook main.yml --check --diff --limit <host>
   * /opt/homebrew/bin
   * /opt/homebrew/sbin
 
+## Important Development Guidelines
+
+### Terraform Changes
+**IMPORTANT**: For any change that involves Terraform files (.tf, .tfvars, or files in tf/ directory), you MUST run `terraform plan` to verify the changes before committing. This ensures:
+- Syntax validation
+- Resource dependency checks
+- State consistency
+- No unintended infrastructure changes
+
+Always run from the tf/ directory:
+```bash
+cd tf/
+terraform plan
+```
