@@ -1,0 +1,32 @@
+[Unit]
+Description=GitHub Actions Runner
+After=network.target docker.service
+Wants=docker.service
+
+[Service]
+Type=simple
+User={{ github_runner_user }}
+Group={{ github_runner_group }}
+WorkingDirectory={{ github_runner_dir }}
+ExecStart={{ github_runner_dir }}/run.sh
+Restart=always
+RestartSec=10
+KillMode=process
+KillSignal=SIGTERM
+TimeoutStopSec=5
+
+# Environment variables
+Environment="RUNNER_ALLOW_RUNASROOT=0"
+{% if github_runner_allow_update %}
+Environment="ACTIONS_RUNNER_AUTOUPDATE=1"
+{% endif %}
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths={{ github_runner_base_dir }} {{ github_runner_work_dir }}
+
+[Install]
+WantedBy=multi-user.target

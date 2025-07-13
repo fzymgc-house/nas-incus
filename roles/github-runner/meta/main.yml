@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  author: fzymgc
+  description: GitHub Actions self-hosted runner role
+  company: fzymgc.house
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags:
+    - github
+    - runner
+    - ci
+    - cd
+    - actions
+
+dependencies:
+  - role: common
