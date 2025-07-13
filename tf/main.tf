@@ -70,3 +70,11 @@ module "precipice-server" {
   server_database_dir = "/mnt/main/fzymgc-house/incus/storage/precipice/database"
 }
 
+module "github-runners" {
+  depends_on                    = [module.profiles]
+  source                        = "./modules/github-runner"
+  container_bridge_network_name = module.base.container_bridge_network_name
+  runner_count                  = 1
+  runner_name                   = "github-runner"
+}
+
