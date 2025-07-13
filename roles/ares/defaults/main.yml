@@ -20,4 +20,4 @@ ares_packages_to_install:
   - valkey
   - valkey-redis-compat
 
-ruby_version: 3.1.2
+ares_ruby_version: 3.1.2

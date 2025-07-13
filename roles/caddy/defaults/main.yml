@@ -8,4 +8,4 @@ caddy_packages_to_install:
   - apt-transport-https
   - ca-certificates
 
-use_local_resolvers: false
+caddy_use_local_resolvers: false
