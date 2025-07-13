@@ -1,0 +1,106 @@
+#cloud-config
+# GitHub Runner specific cloud-init configuration
+
+# Merge with base configuration
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [recurse_array]
+
+# Additional packages for GitHub Actions runner
+packages:
+  - docker.io
+  - docker-compose
+  - jq
+  - unzip
+  - libicu-dev
+  - libssl-dev
+  - ca-certificates
+  - software-properties-common
+  - apt-transport-https
+  - gnupg
+  - lsb-release
+  - nodejs
+  - npm
+  - dotnet-sdk-8.0
+  - dotnet-sdk-6.0
+
+# Create runner user and directories
+users:
+  - name: runner
+    uid: 1001
+    shell: /bin/bash
+    groups: [docker, sudo]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    home: /home/runner
+
+# Docker configuration
+write_files:
+  - path: /etc/docker/daemon.json
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "10m",
+          "max-file": "3"
+        },
+        "storage-driver": "overlay2"
+      }
+
+# Runner directories and permissions
+runcmd:
+  # Enable and start Docker
+  - systemctl enable docker
+  - systemctl start docker
+  
+  # Create runner directories
+  - mkdir -p /home/runner/actions-runner
+  - mkdir -p /home/runner/workspace
+  - mkdir -p /home/runner/.config
+  
+  # Set ownership
+  - chown -R runner:runner /home/runner
+  
+  # Add runner user to docker group
+  - usermod -aG docker runner
+  
+  # Configure git for runner user
+  - sudo -u runner git config --global init.defaultBranch main
+  - sudo -u runner git config --global user.name "GitHub Runner"
+  - sudo -u runner git config --global user.email "runner@localhost"
+  
+  # Install GitHub CLI
+  - |
+    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+    chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+    apt-get update
+    apt-get install -y gh
+
+# Configure systemd service for runner (placeholder - will be configured by Ansible)
+  - |
+    cat > /etc/systemd/system/github-runner.service << 'EOF'
+    [Unit]
+    Description=GitHub Actions Runner
+    After=network.target docker.service
+    Wants=docker.service
+
+    [Service]
+    Type=simple
+    User=runner
+    Group=runner
+    WorkingDirectory=/home/runner/actions-runner
+    ExecStart=/home/runner/actions-runner/run.sh
+    Restart=always
+    RestartSec=10
+    KillMode=process
+    KillSignal=SIGTERM
+    TimeoutStopSec=5
+
+    [Install]
+    WantedBy=multi-user.target
+    EOF
+  
+  # Don't enable the service yet - Ansible will handle registration and enablement
+  - systemctl daemon-reload

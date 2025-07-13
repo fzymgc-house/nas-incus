@@ -47,7 +47,15 @@ This plan outlines the implementation of a local GitHub Actions runner using Inc
      - Pinned Ubuntu image version (20250712_07:42)
      - Created comprehensive module README.md
      - Removed unused data source
-2. Create cloud-init profile for runner initialization
+2. ✅ Create cloud-init profile for runner initialization (PR: feat/github-runner-cloudinit-profile)
+   - Created dedicated `github-runner` profile in `tf/modules/profiles/`
+   - Configured cloud-init with:
+     - Docker and Docker Compose installation
+     - Development tools (Node.js, .NET SDKs, GitHub CLI)
+     - Runner user with sudo and docker access
+     - Systemd service template for GitHub runner
+   - Enabled Docker-in-Docker support with privileged container
+   - Updated GitHub runner module to use the new profile
 3. Create Ansible role for GitHub runner setup
 4. Add runner registration with GitHub organization/repo
 5. Configure Docker-in-Docker support for container workflows
