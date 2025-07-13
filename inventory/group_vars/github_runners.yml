@@ -1,0 +1,34 @@
+---
+# GitHub Runners group variables
+
+# Common configuration for all GitHub runners
+ansible_connection: community.general.incus
+ansible_incus_remote: nas
+ansible_become: false
+ansible_user: root
+
+# GitHub runner configuration
+# Uncomment and set these in your inventory or override at runtime
+# github_runner_org: "your-organization"
+# github_runner_repo: "your-org/your-repo"  # Use this instead of org for repo-specific runners
+
+# Registration token from 1Password
+# github_runner_registration_token: "{{ lookup('onepassword', 'GitHub Runner Registration Token', vault='fzymgc-house', field='token') }}"
+
+# Runner labels (can be overridden per host)
+github_runner_labels: "self-hosted,Linux,X64,docker,incus"
+
+# Auto-update runners
+github_runner_allow_update: true
+
+# Network configuration for runners (internal only)
+network_eth1:
+  type: dhcp
+  interface_name: eth1
+  use_dhcp_routes: false
+  dns_domain: incus
+
+# Automatic reboot configuration
+reboot_offset: 15m
+install_time: 04:00
+reboot_time: 04:30

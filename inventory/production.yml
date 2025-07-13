@@ -104,3 +104,12 @@ aresmush_servers:
   hosts:
     doorsportal1:
     precipice:
+
+github_runners:
+  hosts:
+    runner:
+      ansible_hostname: runner
+      ansible_host: runner.fzymgc.house
+      ansible_fqdn: runner.fzymgc.house
+      # Override runner name if needed
+      # github_runner_name: "custom-runner-name"

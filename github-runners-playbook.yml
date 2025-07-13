@@ -1,0 +1,67 @@
+---
+- name: Configure GitHub Actions Runners
+  hosts: github_runners
+  gather_facts: true
+  become: true
+
+  vars:
+    # Override these in inventory or command line
+    # github_runner_org: "your-org"
+    # github_runner_repo: "your-org/your-repo"
+    # github_runner_registration_token: "{{ lookup('onepassword', 'GitHub Runner Token', field='token') }}"
+
+  pre_tasks:
+    - name: Wait for cloud-init to complete
+      ansible.builtin.command:
+        cmd: cloud-init status --wait
+      changed_when: false
+      tags:
+        - always
+
+    - name: Ensure runner user exists
+      ansible.builtin.user:
+        name: runner
+        state: present
+        shell: /bin/bash
+        home: /home/runner
+        groups:
+          - docker
+          - sudo
+      tags:
+        - always
+
+  roles:
+    - role: common
+      tags:
+        - common
+        - github-runners
+
+    - role: github-runner
+      tags:
+        - github-runner
+        - github-runners
+
+  post_tasks:
+    - name: Verify runner service is running
+      ansible.builtin.systemd:
+        name: github-runner
+        state: started
+      tags:
+        - verify
+        - github-runners
+
+    - name: Display runner status
+      ansible.builtin.command:
+        cmd: systemctl status github-runner --no-pager
+      register: runner_status
+      changed_when: false
+      tags:
+        - verify
+        - github-runners
+
+    - name: Show runner status
+      ansible.builtin.debug:
+        var: runner_status.stdout_lines
+      tags:
+        - verify
+        - github-runners

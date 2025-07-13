@@ -75,3 +75,8 @@
   ansible.builtin.import_playbook: ares-servers-playbook.yml
   tags:
     - ares-servers
+
+- name: Run github-runners playbook
+  ansible.builtin.import_playbook: github-runners-playbook.yml
+  tags:
+    - github-runners

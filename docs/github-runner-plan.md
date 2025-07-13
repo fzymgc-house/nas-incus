@@ -56,8 +56,28 @@ This plan outlines the implementation of a local GitHub Actions runner using Inc
      - Systemd service template for GitHub runner
    - Enabled Docker-in-Docker support with privileged container
    - Updated GitHub runner module to use the new profile
-3. Create Ansible role for GitHub runner setup
-4. Add runner registration with GitHub organization/repo
-5. Configure Docker-in-Docker support for container workflows
-6. Create playbook to orchestrate runner deployment
-7. Add security hardening and network isolation
+3. ✅ Create Ansible role for GitHub runner setup (PR: feat/github-runner-ansible-role)
+   - Created `roles/github-runner/` with complete role structure
+   - Downloads and installs GitHub Actions runner software
+   - Handles runner registration with org or repo
+   - Creates systemd service with security restrictions
+   - Supports auto-updates and custom labels
+4. ✅ Add runner registration with GitHub organization/repo
+   - Integrated 1Password for registration token management
+   - Supports both organization and repository runners
+   - Configurable via inventory or playbook variables
+5. ✅ Configure Docker-in-Docker support for container workflows
+   - Enabled privileged mode in github-runner profile
+   - Docker pre-installed via cloud-init
+   - Runner user added to docker group
+   - Container has necessary kernel modules (overlay)
+6. ✅ Create playbook to orchestrate runner deployment
+   - Created `github-runners-playbook.yml`
+   - Integrated into `main.yml` with `github-runners` tag
+   - Added inventory group and group_vars configuration
+   - Includes verification steps and status display
+7. ✅ Add security hardening and network isolation
+   - Internal network only (no external interface)
+   - Systemd service with security restrictions (ProtectSystem, PrivateTmp)
+   - Runner runs as non-root user
+   - Limited filesystem access via ReadWritePaths
