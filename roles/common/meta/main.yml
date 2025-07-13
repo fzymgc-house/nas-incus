@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: nas-incus project
-  description: AreMUSH game server deployment and configuration
+  description: Common system configuration for NAS infrastructure
   company: fzymgc-house
   license: MIT
   min_ansible_version: 2.15
@@ -12,10 +12,10 @@ galaxy_info:
         - noble
         - oracular
   galaxy_tags:
-    - aresmush
-    - game-server
-    - ruby
-    - mush
-    - gaming
+    - system
+    - networking
+    - security
+    - common
+    - infrastructure
 
 dependencies: []

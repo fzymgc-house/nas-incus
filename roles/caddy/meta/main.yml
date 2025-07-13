@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: nas-incus project
-  description: AreMUSH game server deployment and configuration
+  description: Caddy web server installation and configuration
   company: fzymgc-house
   license: MIT
   min_ansible_version: 2.15
@@ -12,10 +12,9 @@ galaxy_info:
         - noble
         - oracular
   galaxy_tags:
-    - aresmush
-    - game-server
-    - ruby
-    - mush
-    - gaming
+    - caddy
+    - web-server
+    - ssl
+    - http
 
 dependencies: []
