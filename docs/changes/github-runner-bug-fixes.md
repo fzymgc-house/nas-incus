@@ -80,34 +80,17 @@ This document outlines the plan to address bugs and issues identified in PR #22 
 - ✅ All tests passed (terraform validate, terraform plan)
 - ✅ PR merged to main
 
-### 🔄 Phase 2: Service Reliability (IN REVIEW)
+### ✅ Phase 2: Service Reliability (COMPLETED)
 **PR #24**: https://github.com/fzymgc-house/nas-incus/pull/24
 - ✅ Fixed service dependencies with hard Docker requirement
 - ✅ Added comprehensive error handling to cloud-init
 - ✅ Added Docker daemon health check before runner starts
 - ✅ All tests passed (terraform validate, ansible syntax check)
-- 🔄 PR in review - improvements suggested:
-  - Add timeout to Docker health check (prevent infinite loop)
-  - Adjust GitHub CLI installation error handling
-  - Consider race condition with usermod command
-
-### 🔄 Phase 2.1: Review Improvements (PLANNED)
-Based on PR #24 review feedback:
-
-#### Timeout Protection
-- Add maximum timeout to Docker health check: `for i in {1..150}; do ... done`
-- Prevents infinite loop if Docker daemon never starts
-- 150 iterations × 2 seconds = 5 minute maximum wait
-
-#### Error Handling Adjustments
-- Change GitHub CLI keyring download from `exit 1` to warning-only
-- Keep GitHub CLI as optional component (not critical for runner function)
-- Maintain current error categorization for other commands
-
-#### Race Condition Fix
-- Move `usermod -aG docker runner` after Docker service verification
-- Ensure Docker group exists before adding user
-- Consider adding group existence check
+- ✅ Addressed all review feedback:
+  - Added timeout protection (5 minutes) to Docker health check
+  - Changed GitHub CLI to warning-only (optional component)
+  - Fixed race condition by verifying Docker before usermod
+- ✅ PR merged to main
 
 ### 🔄 Phase 3: Code Quality (PENDING)
 - [ ] Resolve configuration duplication
@@ -140,20 +123,21 @@ Based on PR #24 review feedback:
 
 ## Current Branch Status
 - **Phase 1 Branch**: `fix/phase1-mac-network-bugs` - PR #23 (Merged)
-- **Phase 2 Branch**: `fix/phase2-service-reliability` - PR #24 (In Review)
-- **Next Steps**: Address review feedback in PR #24 before merging
+- **Phase 2 Branch**: `fix/phase2-service-reliability` - PR #24 (Merged)
+- **Next Steps**: Phase 3 - Code quality improvements (DNS duplication, logging)
 
 ## Success Criteria
 - ✅ No MAC address conflicts with multiple runners
 - ✅ Correct network interface configuration
-- 🔄 Services start reliably on boot
+- ✅ Services start reliably on boot (Docker dependencies fixed)
+- ✅ Error handling prevents broken containers
 - 🔄 Runners connect to GitHub successfully
-- 🔄 All tests pass
-- 🔄 No service startup failures
+- 🔄 All integration tests pass
+- 🔄 No DNS configuration conflicts
 
 ## Timeline
-- ✅ Day 1-2: Critical bug fixes (COMPLETED)
-- 🔄 Day 3-4: Service dependency fixes (NEXT)
-- 🔄 Day 5-7: Error handling and testing
-- 🔄 Week 2: Code quality improvements
+- ✅ Day 1-2: Critical bug fixes (COMPLETED - PR #23)
+- ✅ Day 3-4: Service dependency fixes (COMPLETED - PR #24)
+- 🔄 Week 2: Code quality improvements (NEXT)
 - 🔄 Week 3: Full testing and documentation
+- 🔄 Week 4: Performance optimizations
