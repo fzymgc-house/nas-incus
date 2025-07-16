@@ -71,10 +71,9 @@ module "precipice-server" {
 }
 
 module "github-runners" {
-  depends_on                    = [module.profiles]
-  source                        = "./modules/github-runner"
-  container_bridge_network_name = module.base.container_bridge_network_name
-  runner_count                  = 1
-  runner_name                   = "runner"
+  depends_on   = [module.profiles]
+  source       = "./modules/github-runner"
+  runner_count = 1
+  runner_name  = "gh-runner"
 }
 

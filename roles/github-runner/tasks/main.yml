@@ -48,16 +48,16 @@
   register: runner_configured
 
 - name: Configure runner for organization
-  ansible.builtin.command:
-    cmd: >
-      ./config.sh
-      --url https://github.com/{{ github_runner_org }}
-      --token {{ github_runner_registration_token }}
-      --name {{ github_runner_name }}
-      --labels {{ github_runner_labels }}
-      --work {{ github_runner_work_dir }}
-      --unattended
-      --replace
+  ansible.builtin.shell:
+    cmd: |
+      ./config.sh \
+        --url https://github.com/{{ github_runner_org }} \
+        --token {{ github_runner_registration_token }} \
+        --name {{ github_runner_name }} \
+        --labels {{ github_runner_labels }} \
+        --work {{ github_runner_work_dir }} \
+        --unattended \
+        --replace
     chdir: "{{ github_runner_dir }}"
   become: true
   become_user: "{{ github_runner_user }}"
@@ -67,16 +67,16 @@
     - github_runner_repo | length == 0
 
 - name: Configure runner for repository
-  ansible.builtin.command:
-    cmd: >
-      ./config.sh
-      --url https://github.com/{{ github_runner_repo }}
-      --token {{ github_runner_registration_token }}
-      --name {{ github_runner_name }}
-      --labels {{ github_runner_labels }}
-      --work {{ github_runner_work_dir }}
-      --unattended
-      --replace
+  ansible.builtin.shell:
+    cmd: |
+      ./config.sh \
+        --url https://github.com/{{ github_runner_repo }} \
+        --token {{ github_runner_registration_token }} \
+        --name {{ github_runner_name }} \
+        --labels {{ github_runner_labels }} \
+        --work {{ github_runner_work_dir }} \
+        --unattended \
+        --replace
     chdir: "{{ github_runner_dir }}"
   become: true
   become_user: "{{ github_runner_user }}"

@@ -6,6 +6,15 @@
   notify:
     - Restart systemd-resolved
 
+- name: Configure resolved
+  ansible.builtin.template:
+    src: resolved.conf.j2
+    dest: /etc/systemd/resolved.conf
+  vars:
+    dns_address: "{{ network_eth0.dns_address | default(omit) }}"
+  notify:
+    - Restart systemd-resolved
+
 - name: Configure network eth0
   ansible.builtin.template:
     src: "eth-{{ network_eth0.type }}.network.j2"
@@ -47,17 +56,17 @@
 
 - meta: flush_handlers
 
-- name: Add packages
-  ansible.builtin.apt:
-    cache_valid_time: 3600
-    name: "{{ common_packages_to_install }}"
-    state: present
-
 - name: Update apt cache
   ansible.builtin.apt:
     cache_valid_time: 3600
     update_cache: true
   changed_when: false
+
+- name: Add common packages
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    name: "{{ common_packages_to_install }}"
+    state: present
 
 - name: Set git ceiling dirs
   ansible.builtin.copy:
@@ -154,7 +163,7 @@
 - ansible.builtin.import_tasks: mail.yml
   tags: mail
 
-- name: Configure fail2ban
+- name: Configure fail2ban service
   ansible.builtin.systemd:
     name: fail2ban
     state: started
@@ -169,6 +178,12 @@
     - sshd
   notify: Restart fail2ban
   tags: fail2ban
+
+- name: Ensure SSH server is installed
+  ansible.builtin.apt:
+    name: openssh-server
+    state: present
+  tags: ssh
 
 - name: Configure ssh
   ansible.builtin.file:

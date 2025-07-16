@@ -35,6 +35,15 @@
     mode: "0600"
   notify: Postmap mailgun_passwd
 
+- name: Set etc mailname
+  ansible.builtin.copy:
+    dest: /etc/mailname
+    owner: root
+    group: root
+    mode: "0644"
+    content: "{{ ansible_fqdn }}"
+  notify: Restart postfix
+
 - name: Configure postfix
   ansible.builtin.template:
     src: postfix-main.cf.j2

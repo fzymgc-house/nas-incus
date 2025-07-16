@@ -10,9 +10,5 @@ terraform {
       source  = "ansible/ansible"
       version = ">= 1.3.0"
     }
-    onepassword = {
-      source  = "1Password/onepassword"
-      version = ">= 2.1.2"
-    }
   }
 }
