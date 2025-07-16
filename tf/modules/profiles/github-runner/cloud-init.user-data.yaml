@@ -124,6 +124,16 @@ runcmd:
   - systemctl enable docker || echo "Error: Failed to enable Docker service"
   - systemctl start docker || { echo "Error: Failed to start Docker service"; exit 1; }
 
+  # Verify Docker is running before adding user to group
+  - |
+    for i in {1..30}; do
+      docker info >/dev/null 2>&1 && break || { echo "Waiting for Docker daemon to be ready... ($i/30)"; sleep 2; }
+    done
+    docker info >/dev/null 2>&1 || { echo "Error: Docker daemon failed to start"; exit 1; }
+
+  # Add runner user to docker group after Docker is verified running
+  - usermod -aG docker runner || echo "Error: Failed to add runner to docker group"
+
   # Create runner directories
   - mkdir -p /home/runner/actions-runner || echo "Error: Failed to create actions-runner directory"
   - mkdir -p /home/runner/workspace || echo "Error: Failed to create workspace directory"
@@ -132,9 +142,6 @@ runcmd:
   # Set ownership
   - chown -R runner:runner /home/runner
 
-  # Add runner user to docker group
-  - usermod -aG docker runner || echo "Error: Failed to add runner to docker group"
-
   # Configure git for runner user
   - sudo -u runner git config --global init.defaultBranch main || echo "Warning: Failed to set git default branch"
   - sudo -u runner git config --global user.name "GitHub Runner" || echo "Warning: Failed to set git user name"
@@ -142,15 +149,15 @@ runcmd:
 
   # Install GitHub CLI
   - |
-    set -e
     curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg || {
-      echo "Error: Failed to download GitHub CLI keyring"
-      exit 1
+      echo "Warning: Failed to download GitHub CLI keyring"
     }
-    chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-    apt-get update || echo "Warning: apt-get update failed for GitHub CLI repo"
-    apt-get install -y gh || echo "Warning: Failed to install GitHub CLI"
+    if [ -f /usr/share/keyrings/githubcli-archive-keyring.gpg ]; then
+      chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+      apt-get update || echo "Warning: apt-get update failed for GitHub CLI repo"
+      apt-get install -y gh || echo "Warning: Failed to install GitHub CLI"
+    fi
 
   # Configure systemd service for runner (placeholder - will be configured by Ansible)
   - |
@@ -166,7 +173,7 @@ runcmd:
     User=runner
     Group=runner
     WorkingDirectory=/home/runner/actions-runner
-    ExecStartPre=/bin/bash -c 'until docker info >/dev/null 2>&1; do echo "Waiting for Docker..."; sleep 2; done'
+    ExecStartPre=/bin/bash -c 'for i in {1..150}; do docker info >/dev/null 2>&1 && break || { echo "Waiting for Docker... ($i/150)"; sleep 2; }; done; docker info >/dev/null 2>&1'
     ExecStart=/home/runner/actions-runner/run.sh
     Restart=always
     RestartSec=10
