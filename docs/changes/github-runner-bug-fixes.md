@@ -30,22 +30,24 @@ This document outlines the plan to address bugs and issues identified in PR #22 
 
 ### 🟡 High Priority Issues
 
-#### 3. Service Dependencies 🔄 PENDING
+#### 3. Service Dependencies ✅ FIXED (PR #24)
 **Location**: `tf/modules/profiles/github-runner/cloud-init.user-data.yaml:156-158`
 **Issue**: GitHub runner service may start before Docker is ready
-**Fix**:
-- Add `After=docker.service` to systemd unit
-- Add `Requires=docker.service` for hard dependency
-- Implement health check before starting runner
+**Fix Applied**:
+- Added `After=docker.service` to systemd unit
+- Added `Requires=docker.service` for hard dependency
+- Implemented health check before starting runner
+- **Status**: Completed in PR #24 (pending review improvements)
 
-#### 4. Missing Error Handling 🔄 PENDING
+#### 4. Missing Error Handling ✅ FIXED (PR #24)
 **Locations**: 
 - Git configuration: `tf/modules/profiles/github-runner/cloud-init.user-data.yaml:138-141`
 - Package installation: `tf/modules/profiles/github-runner/cloud-init.user-data.yaml:144-149`
-**Fix**:
-- Add `|| true` for non-critical commands
-- Use proper error checking for critical operations
-- Log failures to cloud-init output
+**Fix Applied**:
+- Added `|| echo "Warning..."` for non-critical commands
+- Added proper error checking for critical operations
+- All failures now logged to cloud-init output
+- **Status**: Completed in PR #24 (pending review improvements)
 
 ### 🟠 Medium Priority Issues
 
@@ -76,12 +78,36 @@ This document outlines the plan to address bugs and issues identified in PR #22 
 - ✅ Fixed MAC address generation for multiple runners
 - ✅ Corrected network interface configuration
 - ✅ All tests passed (terraform validate, terraform plan)
-- ✅ PR created and awaiting review
+- ✅ PR merged to main
 
-### 🔄 Phase 2: Service Reliability (PENDING)
-- [ ] Fix service dependencies and startup order
-- [ ] Add comprehensive error handling
-- [ ] Test service reliability across reboots
+### 🔄 Phase 2: Service Reliability (IN REVIEW)
+**PR #24**: https://github.com/fzymgc-house/nas-incus/pull/24
+- ✅ Fixed service dependencies with hard Docker requirement
+- ✅ Added comprehensive error handling to cloud-init
+- ✅ Added Docker daemon health check before runner starts
+- ✅ All tests passed (terraform validate, ansible syntax check)
+- 🔄 PR in review - improvements suggested:
+  - Add timeout to Docker health check (prevent infinite loop)
+  - Adjust GitHub CLI installation error handling
+  - Consider race condition with usermod command
+
+### 🔄 Phase 2.1: Review Improvements (PLANNED)
+Based on PR #24 review feedback:
+
+#### Timeout Protection
+- Add maximum timeout to Docker health check: `for i in {1..150}; do ... done`
+- Prevents infinite loop if Docker daemon never starts
+- 150 iterations × 2 seconds = 5 minute maximum wait
+
+#### Error Handling Adjustments
+- Change GitHub CLI keyring download from `exit 1` to warning-only
+- Keep GitHub CLI as optional component (not critical for runner function)
+- Maintain current error categorization for other commands
+
+#### Race Condition Fix
+- Move `usermod -aG docker runner` after Docker service verification
+- Ensure Docker group exists before adding user
+- Consider adding group existence check
 
 ### 🔄 Phase 3: Code Quality (PENDING)
 - [ ] Resolve configuration duplication
@@ -113,9 +139,9 @@ This document outlines the plan to address bugs and issues identified in PR #22 
 - Monitoring dashboard validation
 
 ## Current Branch Status
-- **Current Branch**: `fix/phase1-mac-network-bugs`
-- **PR**: #23 - Awaiting review
-- **Next Branch**: Will create `fix/phase2-service-reliability` after PR #23 is merged
+- **Phase 1 Branch**: `fix/phase1-mac-network-bugs` - PR #23 (Merged)
+- **Phase 2 Branch**: `fix/phase2-service-reliability` - PR #24 (In Review)
+- **Next Steps**: Address review feedback in PR #24 before merging
 
 ## Success Criteria
 - ✅ No MAC address conflicts with multiple runners
