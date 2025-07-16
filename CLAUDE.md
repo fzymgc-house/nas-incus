@@ -81,21 +81,26 @@ Master orchestrator that:
 - **`nas-support-playbook.yml`**: Docker, administrative users, system tools
 - **`nas-container-apps-playbook.yml`**: Portainer container management
 - **`ares-servers-playbook.yml`**: AreMUSH gaming servers with Ruby/Valkey
+- **`github-runners-playbook.yml`**: GitHub Actions self-hosted runners
 
-## Terraform Module Structure
+## Terraform Infrastructure
 
-### Infrastructure Modules (`tf/modules/`)
+### Quick Reference
+- **Detailed Terraform Guide**: See `tf/CLAUDE.md` for comprehensive Terraform-specific documentation
+- **Module Location**: `tf/modules/`
+- **State Management**: Terraform Cloud workspace `incus-nas`
+
+### Infrastructure Modules
 - **`base/`**: Core Incus infrastructure (projects, networks, storage)
 - **`profiles/`**: Cloud-init configuration and container profiles
 - **`nas-app-proxy/`**: Reverse proxy container configuration
 - **`nas-support/`**: Support services container
 - **`nas-container-apps/`**: Container application hosting
 - **`ares-server/`**: Gaming server containers
+- **`github-runner/`**: GitHub Actions runner containers
 
-### Key Files
-- **`main.tf`**: Module orchestration and resource dependencies
-- **`providers.tf`**: Incus, 1Password, Terraform Cloud providers
-- **`terraform.tfvars`**: Environment-specific variables (not committed)
+### Critical Security Note
+**WARNING**: The `terraform.tfvars` file currently contains exposed tokens. See `tf/CLAUDE.md` for remediation steps.
 
 ## Configuration Patterns
 
@@ -106,7 +111,7 @@ Master orchestrator that:
 
 ### Tagging Strategy
 - All playbooks use consistent tags for selective execution
-- Tags: `incus`, `terraform`, `nas-app-proxy`, `ares-servers`, `nas-support`, `nas-container-apps`
+- Tags: `incus`, `terraform`, `nas-app-proxy`, `ares-servers`, `nas-support`, `nas-container-apps`, `github-runners`
 
 ### Dependencies
 - Terraform provisions infrastructure first
@@ -135,6 +140,12 @@ Master orchestrator that:
 ### `capps-portainer/` Role
 - Portainer deployment for Docker management
 - Container orchestration setup
+
+### `github-runner/` Role
+- GitHub Actions runner installation and configuration
+- Supports organization and repository runners
+- Automatic updates and custom labels
+- Systemd service management
 
 ## Development Notes
 
@@ -190,15 +201,33 @@ ansible-playbook main.yml --check --diff --limit <host>
 
 ## Important Development Guidelines
 
-### Terraform Changes
-**IMPORTANT**: For any change that involves Terraform files (.tf, .tfvars, or files in tf/ directory), you MUST run `terraform plan` to verify the changes before committing. This ensures:
-- Syntax validation
-- Resource dependency checks
-- State consistency
-- No unintended infrastructure changes
+### Terraform Development
 
-Always run from the tf/ directory:
+**IMPORTANT**: For any Terraform changes, you MUST:
+1. Review `tf/CLAUDE.md` for detailed Terraform guidelines and best practices
+2. Run `terraform plan` before committing any changes
+3. Never commit sensitive values in `terraform.tfvars`
+
+Quick validation:
 ```bash
 cd tf/
+terraform validate
 terraform plan
 ```
+
+For detailed Terraform operations, module patterns, and troubleshooting, see `tf/CLAUDE.md`.
+
+## Documentation Structure
+
+### Documentation Organization
+- **`/docs/`**: All project documentation
+- **`/docs/changes/`**: Implementation plans and bug fix tracking
+  - Update plans as phases complete
+  - Track bug fixes and their resolution status
+  - Document architectural decisions
+
+### GitHub Runner Components
+- **`github-runners-playbook.yml`**: Orchestrates GitHub runner deployment
+- **`tf/modules/github-runner/`**: Terraform module for runner containers
+- **`roles/github-runner/`**: Ansible role for runner configuration
+- **Tags**: `github-runners` for selective deployment

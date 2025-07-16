@@ -14,7 +14,7 @@ resource "incus_instance" "github_runner" {
   profiles    = ["default", "base", "github-runner"]
 
   config = {
-    "user.access_interface" = "eth1"
+    "user.access_interface" = "eth0"
     "raw.idmap"             = <<-EOT
       uid 568 568
       gid 568 568
@@ -30,7 +30,7 @@ resource "incus_instance" "github_runner" {
     properties = {
       nictype = "macvlan"
       parent  = "bond0"
-      hwaddr  = "00:16:3e:ae:aa:0${count.index + 3}"
+      hwaddr  = format("00:16:3e:ae:aa:%02x", count.index + 3)
     }
   }
 
