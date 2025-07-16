@@ -81,6 +81,7 @@ Master orchestrator that:
 - **`nas-support-playbook.yml`**: Docker, administrative users, system tools
 - **`nas-container-apps-playbook.yml`**: Portainer container management
 - **`ares-servers-playbook.yml`**: AreMUSH gaming servers with Ruby/Valkey
+- **`github-runners-playbook.yml`**: GitHub Actions self-hosted runners
 
 ## Terraform Module Structure
 
@@ -91,6 +92,7 @@ Master orchestrator that:
 - **`nas-support/`**: Support services container
 - **`nas-container-apps/`**: Container application hosting
 - **`ares-server/`**: Gaming server containers
+- **`github-runner/`**: GitHub Actions runner containers
 
 ### Key Files
 - **`main.tf`**: Module orchestration and resource dependencies
@@ -106,7 +108,7 @@ Master orchestrator that:
 
 ### Tagging Strategy
 - All playbooks use consistent tags for selective execution
-- Tags: `incus`, `terraform`, `nas-app-proxy`, `ares-servers`, `nas-support`, `nas-container-apps`
+- Tags: `incus`, `terraform`, `nas-app-proxy`, `ares-servers`, `nas-support`, `nas-container-apps`, `github-runners`
 
 ### Dependencies
 - Terraform provisions infrastructure first
@@ -135,6 +137,12 @@ Master orchestrator that:
 ### `capps-portainer/` Role
 - Portainer deployment for Docker management
 - Container orchestration setup
+
+### `github-runner/` Role
+- GitHub Actions runner installation and configuration
+- Supports organization and repository runners
+- Automatic updates and custom labels
+- Systemd service management
 
 ## Development Notes
 
@@ -202,3 +210,18 @@ Always run from the tf/ directory:
 cd tf/
 terraform plan
 ```
+
+## Documentation Structure
+
+### Documentation Organization
+- **`/docs/`**: All project documentation
+- **`/docs/changes/`**: Implementation plans and bug fix tracking
+  - Update plans as phases complete
+  - Track bug fixes and their resolution status
+  - Document architectural decisions
+
+### GitHub Runner Components
+- **`github-runners-playbook.yml`**: Orchestrates GitHub runner deployment
+- **`tf/modules/github-runner/`**: Terraform module for runner containers
+- **`roles/github-runner/`**: Ansible role for runner configuration
+- **Tags**: `github-runners` for selective deployment
