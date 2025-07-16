@@ -83,9 +83,14 @@ Master orchestrator that:
 - **`ares-servers-playbook.yml`**: AreMUSH gaming servers with Ruby/Valkey
 - **`github-runners-playbook.yml`**: GitHub Actions self-hosted runners
 
-## Terraform Module Structure
+## Terraform Infrastructure
 
-### Infrastructure Modules (`tf/modules/`)
+### Quick Reference
+- **Detailed Terraform Guide**: See `tf/CLAUDE.md` for comprehensive Terraform-specific documentation
+- **Module Location**: `tf/modules/`
+- **State Management**: Terraform Cloud workspace `incus-nas`
+
+### Infrastructure Modules
 - **`base/`**: Core Incus infrastructure (projects, networks, storage)
 - **`profiles/`**: Cloud-init configuration and container profiles
 - **`nas-app-proxy/`**: Reverse proxy container configuration
@@ -94,10 +99,8 @@ Master orchestrator that:
 - **`ares-server/`**: Gaming server containers
 - **`github-runner/`**: GitHub Actions runner containers
 
-### Key Files
-- **`main.tf`**: Module orchestration and resource dependencies
-- **`providers.tf`**: Incus, 1Password, Terraform Cloud providers
-- **`terraform.tfvars`**: Environment-specific variables (not committed)
+### Critical Security Note
+**WARNING**: The `terraform.tfvars` file currently contains exposed tokens. See `tf/CLAUDE.md` for remediation steps.
 
 ## Configuration Patterns
 
@@ -198,18 +201,21 @@ ansible-playbook main.yml --check --diff --limit <host>
 
 ## Important Development Guidelines
 
-### Terraform Changes
-**IMPORTANT**: For any change that involves Terraform files (.tf, .tfvars, or files in tf/ directory), you MUST run `terraform plan` to verify the changes before committing. This ensures:
-- Syntax validation
-- Resource dependency checks
-- State consistency
-- No unintended infrastructure changes
+### Terraform Development
 
-Always run from the tf/ directory:
+**IMPORTANT**: For any Terraform changes, you MUST:
+1. Review `tf/CLAUDE.md` for detailed Terraform guidelines and best practices
+2. Run `terraform plan` before committing any changes
+3. Never commit sensitive values in `terraform.tfvars`
+
+Quick validation:
 ```bash
 cd tf/
+terraform validate
 terraform plan
 ```
+
+For detailed Terraform operations, module patterns, and troubleshooting, see `tf/CLAUDE.md`.
 
 ## Documentation Structure
 
