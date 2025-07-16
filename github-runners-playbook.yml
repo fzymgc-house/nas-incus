@@ -4,17 +4,13 @@
   gather_facts: true
   become: true
 
-  vars:
-    # Override these in inventory or command line
-    # github_runner_org: "your-org"
-    # github_runner_repo: "your-org/your-repo"
-    # github_runner_registration_token: "{{ lookup('onepassword', 'GitHub Runner Token', field='token') }}"
-
   pre_tasks:
     - name: Wait for cloud-init to complete
       ansible.builtin.command:
         cmd: cloud-init status --wait
       changed_when: false
+      failed_when: "'done' not in cloud_init_wait.stdout"
+      register: cloud_init_wait
       tags:
         - always
 
@@ -31,11 +27,6 @@
         - always
 
   roles:
-    - role: common
-      tags:
-        - common
-        - github-runners
-
     - role: github-runner
       tags:
         - github-runner

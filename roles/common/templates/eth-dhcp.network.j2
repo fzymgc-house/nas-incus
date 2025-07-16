@@ -20,3 +20,6 @@ Domains=~{{ dns_domain }}
 
 [DHCP]
 UseRoutes={{ use_dhcp_routes }}
+{% if dns_address is defined %}
+UseDNS=false
+{% endif %}

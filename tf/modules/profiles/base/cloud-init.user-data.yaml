@@ -23,6 +23,7 @@ packages:
   - python3-venv
   - ssh
   - ssh-import-id
+  - sudo
 ssh:
   emit_keys_to_console: false
 timezone: US/Eastern
@@ -43,6 +44,7 @@ users:
     lock_passwd: true
 runcmd:
   - groupmod -g 568 apps
+  - systemctl enable --now ssh
 write_files:
   - path: /etc/systemd/resolved.conf
     owner: 'root:root'

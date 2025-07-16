@@ -15,47 +15,43 @@ resource "incus_instance" "github_runner" {
 
   config = {
     "user.access_interface" = "eth1"
-    "raw.idmap" = <<-EOT
+    "raw.idmap"             = <<-EOT
       uid 568 568
       gid 568 568
     EOT
-    "limits.cpu"    = var.cpu_cores
-    "limits.memory" = var.memory_limit
+    "limits.cpu"            = var.cpu_cores
+    "limits.memory"         = var.memory_limit
   }
 
-  # Internal network interface only for security
+  # External network interface for internet access
   device {
-    name = "eth1"
+    name = "eth0"
     type = "nic"
     properties = {
-      nictype = "bridged"
-      parent  = var.container_bridge_network_name
+      nictype = "macvlan"
+      parent  = "bond0"
+      hwaddr  = "00:16:3e:ae:aa:0${count.index + 3}"
     }
   }
 
-  # Runner workspace storage
-  device {
-    name = "runner-workspace"
-    type = "disk"
-    properties = {
-      path = "/home/runner/workspace"
-      pool = var.storage_pool
-      size = var.disk_size
-    }
-  }
+  # Runner workspace will be created within the container's root filesystem
 
   wait_for {
     type  = "ipv4"
-    nic   = "eth1"
+    nic   = "eth0"
     delay = "30s"
   }
 }
 
-resource "ansible_host" "github_runner" {
+resource "null_resource" "runner_wait_for_cloud_init" {
   count = var.runner_count
-  name  = incus_instance.github_runner[count.index].name
-  variables = {
-    ansible_user = "fzymgc"
-    ansible_host = incus_instance.github_runner[count.index].ipv4_address
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo "Waiting for cloud-init to complete on ${incus_instance.github_runner[count.index].name}..."
+      incus exec ${incus_instance.github_runner[count.index].name} -- cloud-init status --wait | grep -q 'done'
+    EOT
   }
+
+  depends_on = [incus_instance.github_runner]
 }
