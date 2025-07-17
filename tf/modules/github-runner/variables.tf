@@ -59,3 +59,21 @@ variable "container_image" {
   type        = string
   default     = "images:ubuntu/plucky/cloud"
 }
+
+variable "dns_server" {
+  description = "Primary DNS server for the runner"
+  type        = string
+  default     = "192.168.20.1"
+}
+
+variable "dns_domain" {
+  description = "DNS domain for the runner"
+  type        = string
+  default     = "fzymgc.house"
+}
+
+variable "ntp_servers" {
+  description = "List of NTP servers for time synchronization"
+  type        = list(string)
+  default     = ["192.168.20.1", "192.168.20.151", "192.168.20.152", "192.168.20.153"]
+}
