@@ -1,2 +1,13 @@
 tailscale_domain: hound-skate.ts.net
 acme_account_email: nas-admin+acme@sean.fzymgc.house
+
+# Primary DNS configuration
+primary_domain: fzymgc.house
+primary_dns_server: 192.168.20.1
+
+# NTP servers (used by cloud-init)
+ntp_servers:
+  - 192.168.20.1
+  - 192.168.20.151
+  - 192.168.20.152
+  - 192.168.20.153
