@@ -121,37 +121,56 @@ write_files:
         },
         "storage-driver": "overlay2"
       }
-
-# Logging configuration
-write_files:
   - path: /usr/local/bin/log-action
     owner: 'root:root'
     permissions: '0755'
     content: |
       #!/bin/bash
+      set -euo pipefail
+      
       # Structured logging helper for cloud-init actions
-      TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-      LEVEL="${1:-INFO}"
-      COMPONENT="${2:-cloud-init}"
+      readonly LOGFILE="/var/log/cloud-init-structured.log"
+      readonly TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      readonly LEVEL="${1:-INFO}"
+      readonly COMPONENT="${2:-cloud-init}"
       MESSAGE="${3:-No message provided}"
-      echo "{\"timestamp\":\"${TIMESTAMP}\",\"level\":\"${LEVEL}\",\"component\":\"${COMPONENT}\",\"message\":\"${MESSAGE}\"}" | tee -a /var/log/cloud-init-structured.log
+      
+      # Escape special characters for JSON
+      MESSAGE=$(printf '%s' "$MESSAGE" | sed 's/["\\]/\\&/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+      
+      # Validate log level
+      case "$LEVEL" in
+        INFO|WARN|ERROR) ;;
+        *) echo "Invalid log level: $LEVEL" >&2; exit 1 ;;
+      esac
+      
+      # Output JSON log entry
+      printf '{"timestamp":"%s","level":"%s","component":"%s","message":"%s"}\n' \
+        "$TIMESTAMP" "$LEVEL" "$COMPONENT" "$MESSAGE" | tee -a "$LOGFILE"
   - path: /usr/local/bin/github-runner-health-check
     owner: 'root:root'
     permissions: '0755'
     content: |
       #!/bin/bash
+      set -euo pipefail
+      
       # GitHub Runner health check script
       # Returns 0 if healthy, non-zero if unhealthy
       
-      LOGFILE="/var/log/github-runner-health.log"
-      TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      readonly LOGFILE="/var/log/github-runner-health.log"
+      readonly TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
       
       # Function to log health check results
       log_health() {
         local status="$1"
         local component="$2"
         local message="$3"
-        echo "{\"timestamp\":\"${TIMESTAMP}\",\"status\":\"${status}\",\"component\":\"${component}\",\"message\":\"${message}\"}" >> "${LOGFILE}"
+        
+        # Escape message for JSON
+        message=$(printf '%s' "$message" | sed 's/["\\]/\\&/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+        
+        printf '{"timestamp":"%s","status":"%s","component":"%s","message":"%s"}\n' \
+          "$TIMESTAMP" "$status" "$component" "$message" >> "$LOGFILE"
       }
       
       # Check if Docker is running
@@ -180,7 +199,7 @@ write_files:
       fi
       
       # Check disk space
-      DISK_USAGE=$(df -h /home/runner 2>/dev/null | awk 'NR==2 {print $5}' | sed 's/%//')
+      DISK_USAGE=$(df -h /home/runner 2>/dev/null | awk 'NR==2 {gsub(/%/,"",$5); print $5}')
       if [ -n "${DISK_USAGE}" ] && [ "${DISK_USAGE}" -gt 90 ]; then
         log_health "WARN" "disk" "Disk usage is high: ${DISK_USAGE}%"
       else
@@ -238,18 +257,34 @@ runcmd:
   # Enable and start Docker
   - /usr/local/bin/log-action INFO docker "Enabling Docker service"
   - systemctl enable docker || { /usr/local/bin/log-action ERROR docker "Failed to enable Docker service"; echo "Error: Failed to enable Docker service"; }
-  - systemctl start docker || { /usr/local/bin/log-action ERROR docker "Failed to start Docker service"; echo "Error: Failed to start Docker service"; exit 1; }
+  - systemctl start docker || { /usr/local/bin/log-action ERROR docker "Failed to start Docker service"; echo "Error: Failed to start Docker service"; }
 
   # Verify Docker is running before adding user to group
   - |
     /usr/local/bin/log-action INFO docker "Waiting for Docker daemon to be ready"
+    DOCKER_READY=false
     for i in {1..30}; do
-      docker info >/dev/null 2>&1 && { /usr/local/bin/log-action INFO docker "Docker daemon is ready"; break; } || { echo "Waiting for Docker daemon to be ready... ($i/30)"; sleep 2; }
+      if docker info >/dev/null 2>&1; then
+        /usr/local/bin/log-action INFO docker "Docker daemon is ready"
+        DOCKER_READY=true
+        break
+      else
+        echo "Waiting for Docker daemon to be ready... ($i/30)"
+        sleep 2
+      fi
     done
-    docker info >/dev/null 2>&1 || { /usr/local/bin/log-action ERROR docker "Docker daemon failed to start after 60 seconds"; echo "Error: Docker daemon failed to start"; exit 1; }
+    if [ "$DOCKER_READY" = "false" ]; then
+      /usr/local/bin/log-action ERROR docker "Docker daemon failed to start after 60 seconds"
+      echo "Error: Docker daemon failed to start - continuing without Docker support"
+    fi
 
-  # Add runner user to docker group after Docker is verified running
-  - usermod -aG docker runner && /usr/local/bin/log-action INFO user "Added runner to docker group" || { /usr/local/bin/log-action ERROR user "Failed to add runner to docker group"; echo "Error: Failed to add runner to docker group"; }
+  # Add runner user to docker group only if Docker is running
+  - |
+    if docker info >/dev/null 2>&1; then
+      usermod -aG docker runner && /usr/local/bin/log-action INFO user "Added runner to docker group" || { /usr/local/bin/log-action ERROR user "Failed to add runner to docker group"; echo "Error: Failed to add runner to docker group"; }
+    else
+      /usr/local/bin/log-action WARN user "Skipping docker group addition - Docker not available"
+    fi
 
   # Create runner directories
   - /usr/local/bin/log-action INFO filesystem "Creating runner directories"
