@@ -20,3 +20,6 @@
     ports:
       - "{{ ansible_eth1.ipv4.address }}:9443:9443"
       - "{{ ansible_eth1.ipv4.address }}:8000:8000"
+    env:
+      - "TZ=America/New_York"
+      - "TRUSTED_ORIGINS=https://nas-portainer.fzymgc.house"

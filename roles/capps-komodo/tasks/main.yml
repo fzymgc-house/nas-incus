@@ -1,0 +1,83 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for capps-komodo
+
+- name: Ensure main-bridge network exists
+  community.docker.docker_network:
+    name: main-bridge
+    state: present
+    driver: bridge
+    driver_options:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.bridge.host_binding_ipv4: "{{ ansible_eth0.ipv4.address }}"
+      com.docker.network.bridge.name: "main-bridge"
+      com.docker.network.driver.mtu: "1500"
+
+- name: Install fzymgc certificates
+  ansible.builtin.copy:
+    content: "{{ item.cert }}"
+    dest: "/usr/local/share/ca-certificates/{{ item.name }}"
+    owner: root
+    group: root
+    mode: "0644"
+  with_items:
+    - cert: "{{ lookup('community.general.onepassword', 'fzymgc-root-ca', field='cert', vault='fzymgc-house') }}"
+      name: "fzymgc-root-ca.crt"
+    - cert: "{{ lookup('community.general.onepassword', 'fzymgc-ica1-ca', field='fullchain', vault='fzymgc-house') }}"
+      name: "fzymgc-ica1-ca.crt"
+  notify: Update CA certificates
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Create komodo data directory
+  ansible.builtin.file:
+    path: "{{ host_data_base_dir }}/komodo/data"
+    owner: "{{ host_data_dir_owner }}"
+    group: "{{ host_data_dir_group }}"
+    mode: "{{ host_data_dir_mode }}"
+    state: directory
+    recurse: true
+
+- name: Create postgres data directory and chown to 999:999
+  ansible.builtin.file:
+    path: "{{ host_data_base_dir }}/komodo/data/postgres"
+    owner: "999"
+    group: "999"
+    mode: "0750"
+    state: directory
+    recurse: true
+
+- name: Create ferretdb data directory and chown to 1000:1000
+  ansible.builtin.file:
+    path: "{{ host_data_base_dir }}/komodo/data/ferretdb"
+    owner: "1000"
+    group: "1000"
+    mode: "0750"
+    state: directory
+    recurse: true
+
+- name: Template config to komodo dir
+  ansible.builtin.template:
+    src: komodo-config.toml.j2
+    dest: "{{ host_data_base_dir }}/komodo/config.toml"
+    owner: "{{ host_data_dir_owner }}"
+    group: "{{ host_data_dir_group }}"
+    mode: "0640"
+
+- name: Template compose file to compose dir
+  ansible.builtin.template:
+    src: compose.yaml.j2
+    dest: "{{ host_data_base_dir }}/komodo/compose.yaml"
+    owner: "{{ host_data_dir_owner }}"
+    group: "{{ host_data_dir_group }}"
+    mode: "0640"
+  notify: Restart komodo core container
+
+- name: Deploy komodo containers
+  community.docker.docker_compose_v2:
+    state: present
+    project_name: "komodo"
+    project_src: "{{ host_data_base_dir }}/komodo"
+
