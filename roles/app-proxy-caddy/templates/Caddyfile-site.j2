@@ -1,26 +1,31 @@
+#jinja2: lstrip_blocks: "true"
 %[ site_fqdn ]% {
   encode zstd gzip
-  %[- if site_tls_cloudflare %]
+  {% if site_tls_cloudflare %}
   tls {
     issuer acme %[ acme_ca ]% {
       email %[ acme_account_email ]%
       disable_http_challenge
       dns cloudflare %[ cloudflare_api_token ]%
-      # propagation_delay 60s
-      # propagation_timeout -1
-    %[- if use_local_resolvers %]
+      propagation_delay 60s
+      propagation_timeout -1
+      {% if use_local_resolvers %}
       resolvers 127.0.0.1
-    %[- endif %]
+      {% endif %}
     }
   }
-  %[- endif %]
+  {% endif %}
+
   reverse_proxy %[ site_upstream_url ]% {
     header_up Host {upstream_hostport}
-    %[- if site_upstream_tls %]
+    header_up X-Real-IP {remote}
+    header_up X-Forwarded-For {remote}, {host}
+    header_up X-Forwarded-Proto {scheme}
+    {% if site_upstream_tls %}
     transport http {
       tls_server_name %[ tls_server_name ]%
     }
-    %[- endif %]
+    {% endif %}
   }
   %[ site_additional_config | default('') | indent(2)  ]%
 }

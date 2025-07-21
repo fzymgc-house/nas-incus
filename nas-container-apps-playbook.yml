@@ -14,5 +14,5 @@
         docker_compose_package: docker-compose-plugin
         docker_compose_package_state: present
       tags: docker
-    - role: capps-portainer
-      tags: portainer
+    - role: capps-komodo
+      tags: komodo

@@ -1,0 +1,27 @@
+---
+- name: Configure searxng site
+  ansible.builtin.blockinfile:
+    dest: /etc/caddy/Caddyfile
+    mode: "0640"
+    owner: caddy
+    group: caddy
+    marker: "# {mark} SEARXNG SITE"
+    insertafter: EOF
+    append_newline: true
+    create: true
+    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
+      template_vars=dict(
+        site_fqdn='searxng.fzymgc.house',
+        site_upstream_url='http://nas-container-apps.incus:29999',
+        site_tls_cloudflare=true,
+        site_upstream_tls=false,
+        use_local_resolvers=true,
+        tls_server_name='searxng.fzymgc.house',
+        site_additional_config=searxng_site_additional_config
+      )) }}"
+    validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
+  notify:
+    - Restart caddy
+  tags:
+    - caddy
+    - caddy-sites

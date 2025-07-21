@@ -1,0 +1,33 @@
+#SPDX-License-Identifier: MIT-0
+galaxy_info:
+  author: fzymgc-house
+  description: Deploy and configure Komodo container management platform on NAS infrastructure
+  company: fzymgc-house
+
+  license: MIT-0
+
+  min_ansible_version: "2.9"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+        - focal
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+
+  galaxy_tags:
+    - komodo
+    - docker
+    - containers
+    - management
+    - postgresql
+    - ferretdb
+    - nas
+    - infrastructure
+
+dependencies:
+  - role: common
+    when: capps_komodo_run_common_role | default(false)

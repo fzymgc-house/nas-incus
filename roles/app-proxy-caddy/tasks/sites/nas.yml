@@ -1,0 +1,26 @@
+---
+- name: Configure nas site
+  ansible.builtin.blockinfile:
+    dest: /etc/caddy/Caddyfile
+    mode: "0640"
+    owner: caddy
+    group: caddy
+    marker: "# {mark} NAS SITE"
+    insertafter: EOF
+    append_newline: true
+    create: true
+    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
+      template_vars=dict(
+        site_fqdn='nas.fzymgc.house',
+        site_upstream_url='https://192.168.20.200:444',
+        site_tls_cloudflare=true,
+        site_upstream_tls=true,
+        use_local_resolvers=true,
+        tls_server_name='nas.fzymgc.house',
+      )) }}"
+    validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
+  notify:
+    - Restart caddy
+  tags:
+    - caddy
+    - caddy-sites

@@ -3,142 +3,25 @@
     cloudflare_api_token: "{{ lookup('community.general.onepassword', 'cloudflare-api-token', field='password', vault='fzymgc-house') }}"
     zerossl_key_id: "{{ lookup('community.general.onepassword', 'zerossl-eab-creds', field='username', vault='fzymgc-house') }}"
     zerossl_mac_key: "{{ lookup('community.general.onepassword', 'zerossl-eab-creds', field='password', vault='fzymgc-house') }}"
+  tags:
+    - caddy
+    - caddy-sites
 
+# Import all site configurations
+- name: Import komodo site configuration
+  ansible.builtin.import_tasks: sites/komodo.yml
 
+- name: Import nas-storj site configuration
+  ansible.builtin.import_tasks: sites/nas-storj.yml
 
-- name: Configure nas-portainer site
-  ansible.builtin.blockinfile:
-    dest: /etc/caddy/Caddyfile
-    mode: "0640"
-    owner: caddy
-    group: caddy
-    marker: "# {mark} NAS-PORTAINER SITE"
-    insertafter: EOF
-    append_newline: true
-    create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
-      template_vars=dict(
-        site_fqdn='nas-portainer.fzymgc.house',
-        site_upstream_url='https://nas-container-apps.incus:9443',
-        site_tls_cloudflare=true,
-        site_upstream_tls=true,
-        tls_server_name='localhost',
-        use_local_resolvers=true
-      )) }}"
-    validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
-  notify:
-    - Restart caddy
+- name: Import nas-syncthing-sean site configuration
+  ansible.builtin.import_tasks: sites/nas-syncthing-sean.yml
 
-- name: Configure nas-storj site
-  ansible.builtin.blockinfile:
-    dest: /etc/caddy/Caddyfile
-    mode: "0640"
-    owner: caddy
-    group: caddy
-    marker: "# {mark} NAS-STORJ SITE"
-    insertafter: EOF
-    append_newline: true
-    create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
-      template_vars=dict(
-        site_fqdn='nas-storj.fzymgc.house',
-        site_upstream_url='http://192.168.20.200:20909',
-        site_tls_cloudflare=true,
-        site_upstream_tls=false,
-        use_local_resolvers=true
-      )) }}"
-    validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
-  notify:
-    - Restart caddy
+- name: Import nas site configuration
+  ansible.builtin.import_tasks: sites/nas.yml
 
-- name: Configure nas-syncthing-sean site
-  ansible.builtin.blockinfile:
-    dest: /etc/caddy/Caddyfile
-    mode: "0640"
-    owner: caddy
-    group: caddy
-    marker: "# {mark} NAS-SYNCTHING-SEAN SITE"
-    insertafter: EOF
-    append_newline: true
-    create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
-      template_vars=dict(
-        site_fqdn='nas-syncthing-sean.fzymgc.house',
-        site_upstream_url='http://192.168.20.200:20910',
-        site_tls_cloudflare=true,
-        site_upstream_tls=false,
-        use_local_resolvers=true
-      )) }}"
-    validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
-  notify:
-    - Restart caddy
+- name: Import searxng site configuration
+  ansible.builtin.import_tasks: sites/searxng.yml
 
-- name: Configure nas-storj site
-  ansible.builtin.blockinfile:
-    dest: /etc/caddy/Caddyfile
-    mode: "0640"
-    owner: caddy
-    group: caddy
-    marker: "# {mark} NAS-STORJ SITE"
-    insertafter: EOF
-    append_newline: true
-    create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
-      template_vars=dict(
-        site_fqdn='nas-storj.fzymgc.house',
-        site_upstream_url='http://192.168.20.200:20909',
-        site_tls_cloudflare=true,
-        site_upstream_tls=false,
-        use_local_resolvers=true
-      )) }}"
-    validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
-  notify:
-    - Restart caddy
-
-- name: Configure nas site
-  ansible.builtin.blockinfile:
-    dest: /etc/caddy/Caddyfile
-    mode: "0640"
-    owner: caddy
-    group: caddy
-    marker: "# {mark} NAS SITE"
-    insertafter: EOF
-    append_newline: true
-    create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
-      template_vars=dict(
-        site_fqdn='nas.fzymgc.house',
-        site_upstream_url='https://192.168.20.200:444',
-        site_tls_cloudflare=true,
-        site_upstream_tls=true,
-        use_local_resolvers=true,
-        tls_server_name='nas.fzymgc.house',
-      )) }}"
-    validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
-  notify:
-    - Restart caddy
-
-- name: Configure searxng site
-  ansible.builtin.blockinfile:
-    dest: /etc/caddy/Caddyfile
-    mode: "0640"
-    owner: caddy
-    group: caddy
-    marker: "# {mark} SEARXNG SITE"
-    insertafter: EOF
-    append_newline: true
-    create: true
-    content: "{{ lookup('ansible.builtin.template', 'Caddyfile-site.j2', variable_start_string='%[', variable_end_string=']%', block_start_string='%[-', block_end_string='%]',
-      template_vars=dict(
-        site_fqdn='searxng.fzymgc.house',
-        site_upstream_url='https://192.168.20.200:8888',
-        site_tls_cloudflare=true,
-        site_upstream_tls=true,
-        use_local_resolvers=true,
-        tls_server_name='searxng.fzymgc.house',
-        site_additional_config=searxng_site_additional_config
-      )) }}"
-    validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
-  notify:
-    - Restart caddy
-
+- name: Import karakeep site configuration
+  ansible.builtin.import_tasks: sites/karakeep.yml

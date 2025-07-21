@@ -1,0 +1,18 @@
+#SPDX-License-Identifier: MIT-0
+---
+# handlers file for capps-komodo
+
+- name: Update CA certificates
+  ansible.builtin.command: update-ca-certificates
+  tags: ca-certificates
+
+- name: Restart komodo core container
+  community.docker.docker_compose_v2:
+    project_src: "{{ host_data_base_dir }}/komodo"
+    state: restarted
+    services:
+      - core
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes

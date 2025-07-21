@@ -7,3 +7,6 @@ app_proxy_caddy_packages_to_install:
   - debian-archive-keyring
   - apt-transport-https
   - ca-certificates
+
+acme_ca: "https://acme-v02.api.letsencrypt.org/directory"  # Production
+# acme_ca: "https://acme-staging-v02.api.letsencrypt.org/directory"  # Staging
