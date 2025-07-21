@@ -105,13 +105,55 @@ Security Features
 - Regularly update Komodo images to get security patches
 - Restrict access to the Komodo web UI through proper OIDC configuration
 
-Backup Considerations
---------------------
+Backup Strategy
+---------------
 
-Important data to backup:
-- `/mnt/data/komodo/postgres/`: PostgreSQL database
-- `/mnt/data/komodo/config/`: Komodo configuration
-- `/mnt/stacks/komodo/komodo-config.toml`: Application configuration
+### Automated Backups
+
+This role configures automated daily backups with:
+- **Schedule**: Daily with randomized delay (0-1 hour)
+- **Retention**: 7 days of backups
+- **Location**: `/mnt/backups/komodo/`
+
+### Backup Components
+
+1. **PostgreSQL Database**: Full database dump (compressed)
+2. **Komodo Configuration**: Application configuration files
+3. **FerretDB State**: MongoDB-compatible data (if present)
+4. **Backup Manifest**: Metadata about each backup
+
+### Manual Backup/Restore
+
+```bash
+# Create manual backup
+/usr/local/bin/backup-komodo.sh
+
+# List available backups
+ls -la /mnt/backups/komodo/
+
+# Restore from backup (requires timestamp)
+/usr/local/bin/restore-komodo.sh 20240721_143022
+```
+
+### Monitoring Backups
+
+```bash
+# Check backup timer status
+systemctl status komodo-backup.timer
+
+# View recent backup logs
+journalctl -u komodo-backup.service -n 50
+
+# Manually trigger backup
+systemctl start komodo-backup.service
+```
+
+### Important Notes
+
+- Backups are stored locally by default
+- Consider configuring remote backup sync (e.g., rclone) for offsite copies
+- Test restore procedures regularly
+- Monitor backup disk usage
 
 Access
 ------
@@ -119,6 +161,23 @@ Access
 Once deployed, Komodo is accessible at:
 - Web UI: `https://komodo.{{ primary_domain }}`
 - Requires OIDC authentication through Authentik
+
+Update Procedures
+-----------------
+
+For detailed update and upgrade procedures, see `/docs/komodo-update-procedures.md`.
+
+Quick update to latest version:
+```bash
+cd /mnt/stacks/komodo
+docker-compose pull
+docker-compose up -d
+```
+
+Always create a backup before updating:
+```bash
+systemctl start komodo-backup.service
+```
 
 License
 -------

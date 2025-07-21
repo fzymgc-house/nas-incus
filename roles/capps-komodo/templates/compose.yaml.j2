@@ -24,6 +24,12 @@ services:
         reservations:
           cpus: '0.5'
           memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ lookup('community.general.onepassword', 'komodo-secrets', field='db_user', vault='fzymgc-house') }}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     volumes:
       - /mnt/data/komodo/data/postgres:/var/lib/postgresql/data
     environment:
@@ -51,6 +57,12 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
+    healthcheck:
+      test: ["CMD", "ferretdb", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     depends_on:
       - postgres
     volumes:
@@ -75,6 +87,12 @@ services:
         reservations:
           cpus: '0.5'
           memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9120/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     depends_on:
       - ferretdb
     ports:
@@ -118,6 +136,12 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "komodo-periphery"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     networks:
       - internal
     volumes:

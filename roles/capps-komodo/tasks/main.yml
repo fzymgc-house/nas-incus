@@ -82,3 +82,69 @@
     project_name: "komodo"
     project_src: "{{ host_data_base_dir }}/komodo"
 
+- name: Create backup directory
+  ansible.builtin.file:
+    path: /mnt/backups/komodo
+    state: directory
+    owner: "{{ host_data_dir_owner }}"
+    group: "{{ host_data_dir_group }}"
+    mode: "0755"
+
+- name: Install backup scripts
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item | basename }}"
+    owner: root
+    group: root
+    mode: "0755"
+  with_items:
+    - backup-komodo.sh
+    - restore-komodo.sh
+
+- name: Create systemd service for Komodo backup
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=Komodo Backup Service
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/bin/backup-komodo.sh
+      User=root
+      StandardOutput=journal
+      StandardError=journal
+    dest: /etc/systemd/system/komodo-backup.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Create systemd timer for daily Komodo backup
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=Daily Komodo Backup Timer
+      Requires=komodo-backup.service
+
+      [Timer]
+      OnCalendar=daily
+      Persistent=true
+      RandomizedDelaySec=1h
+
+      [Install]
+      WantedBy=timers.target
+    dest: /etc/systemd/system/komodo-backup.timer
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Enable and start Komodo backup timer
+  ansible.builtin.systemd:
+    name: komodo-backup.timer
+    enabled: yes
+    state: started
+    daemon_reload: yes
+
