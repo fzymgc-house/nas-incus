@@ -37,23 +37,33 @@ The PR introduces Karakeep (bookmark manager) and Komodo (container orchestratio
 
 ### Medium Priority (Should Address)
 
-#### 4. Add Resource Limits ❌
+#### 4. Add Resource Limits ✅
 - **File**: `roles/capps-komodo/templates/compose.yaml.j2`
 - **Issue**: No CPU/memory limits defined for containers
 - **Action**: Add appropriate resource constraints for all services
-- **Status**: Not started
+- **Status**: Completed - Added CPU and memory limits/reservations for all Komodo containers:
+  - PostgreSQL: 2 CPU/2GB limit, 0.5 CPU/512MB reserved
+  - FerretDB: 1 CPU/1GB limit, 0.25 CPU/256MB reserved
+  - Komodo Core: 2 CPU/2GB limit, 0.5 CPU/512MB reserved
+  - Komodo Periphery: 1 CPU/1GB limit, 0.25 CPU/256MB reserved
 
-#### 5. Verify PostgreSQL Permissions ❌
+#### 5. Verify PostgreSQL Permissions ✅
 - **File**: `roles/capps-komodo/tasks/main.yml:46`
 - **Issue**: PostgreSQL data directory ownership set to `999:999`
 - **Action**: Verify this matches the container's expected UID/GID
-- **Status**: Not started
+- **Status**: Completed - Verified that:
+  - PostgreSQL container uses UID/GID 999:999 (correct)
+  - FerretDB container uses UID/GID 1000:1000 (correct)
+  - Both match the official Docker images' standard UIDs
 
-#### 6. Document Docker Socket Access ❌
+#### 6. Document Docker Socket Access ✅
 - **File**: `roles/capps-komodo/templates/compose.yaml.j2:93`
 - **Issue**: Container has access to Docker socket (potential security concern)
 - **Action**: Document security implications and mitigation strategies
-- **Status**: Not started
+- **Status**: Completed - Added:
+  - Security note in compose.yaml.j2 explaining the risk
+  - Comprehensive security section in README.md
+  - Listed mitigations and recommendations
 
 #### 7. Add Backup Strategy ❌
 - **Issue**: No backup configuration for PostgreSQL data or Komodo configuration
@@ -92,9 +102,9 @@ The PR introduces Karakeep (bookmark manager) and Komodo (container orchestratio
 
 ## Progress Summary
 - **Total Tasks**: 9
-- **Completed**: 3
+- **Completed**: 6
 - **In Progress**: 0
-- **Remaining**: 6
+- **Remaining**: 3
 
 ## Next Steps
 1. ~~Start with high-priority documentation fixes (quick wins)~~ ✅

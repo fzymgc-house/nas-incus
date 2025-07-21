@@ -87,8 +87,23 @@ Security Features
 - OIDC authentication via Authentik (no local authentication)
 - All secrets retrieved from 1Password at runtime
 - TLS certificates for internal service communication
-- Docker socket access restricted to Komodo Core container only
 - Network isolation between services
+
+### Docker Socket Access
+
+**Important Security Consideration**: The Komodo Periphery container requires access to the Docker socket (`/var/run/docker.sock`) to manage containers on the host. This grants the container effectively root-level access to the host system.
+
+**Mitigations in place**:
+- Resource limits applied to the Periphery container (1 CPU, 1GB RAM)
+- The container is labeled with `komodo.skip` to prevent self-termination
+- Network isolation limits external access
+- Only the Periphery container has Docker socket access (not Core)
+
+**Recommendations**:
+- Monitor Periphery container logs for suspicious activity
+- Consider using Docker socket proxy solutions for additional isolation
+- Regularly update Komodo images to get security patches
+- Restrict access to the Komodo web UI through proper OIDC configuration
 
 Backup Considerations
 --------------------

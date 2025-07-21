@@ -16,6 +16,14 @@ services:
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     volumes:
       - /mnt/data/komodo/data/postgres:/var/lib/postgresql/data
     environment:
@@ -35,6 +43,14 @@ services:
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     depends_on:
       - postgres
     volumes:
@@ -51,6 +67,14 @@ services:
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     depends_on:
       - ferretdb
     ports:
@@ -86,10 +110,23 @@ services:
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     networks:
       - internal
     volumes:
       ## Mount external docker socket
+      ## SECURITY NOTE: This grants the periphery container full control over the Docker daemon.
+      ## This is required for Komodo to manage containers, but be aware that any process with
+      ## access to the Docker socket effectively has root access to the host system.
+      ## Mitigation: The periphery container runs with limited resources and the komodo.skip
+      ## label prevents it from being stopped by Komodo's StopAllContainers command.
       - /var/run/docker.sock:/var/run/docker.sock
       ## Allow Periphery to see processes outside of container
       - /proc:/proc
