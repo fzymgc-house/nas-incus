@@ -63,7 +63,7 @@ ui_write_disabled = false
 ## Useful when only having http connection to core, as UI quick-copy button won't work.
 ## Env: KOMODO_DISABLE_CONFIRM_DIALOG
 ## Default: false
-disable_confirm_dialog = false
+disable_confirm_dialog = true
 
 ## Disables UI websocket automatic reconnection.
 ## Users will still be able to trigger reconnect by clicking the connection indicator.
@@ -138,7 +138,7 @@ disable_non_admin_create = false
 ##  - `lock_login_credentials_for = ["__ALL__"]` will block all users.
 ## Env: KOMODO_LOCK_LOGIN_CREDENTIALS_FOR
 ## Default: empty list
-lock_login_credentials_for = []
+lock_login_credentials_for = ["__ALL__"]
 
 ## Optionally provide a specific jwt secret.
 ## Passing nothing or an empty string will cause one to be generated on every startup.
@@ -490,6 +490,9 @@ accounts = [
 ## but you can also limit access more by placing them in a single Periphery's config file instead.
 ## These cannot be configured in the Komodo Core environment, they must be passed in the file.
 
-# [secrets]
-# SECRET_1 = "value_1"
-# SECRET_2 = "value_2"
+[secrets]
+KARAKEEP_MEILI_MASTER_KEY = "{{ lookup('community.general.onepassword', 'karakeep-secrets', field='meili_master_key', vault='fzymgc-house') }}"
+KARAKEEP_NEXTAUTH_SECRET = "{{ lookup('community.general.onepassword', 'karakeep-secrets', field='nextauth_secret', vault='fzymgc-house') }}"
+KARAKEEP_OIDC_CLIENT_ID = "{{ lookup('community.general.onepassword', 'karakeep-secrets', field='oidc_client_id', vault='fzymgc-house') }}"
+KARAKEEP_OIDC_CLIENT_SECRET = "{{ lookup('community.general.onepassword', 'karakeep-secrets', field='oidc_client_secret', vault='fzymgc-house') }}"
+KARAKEEP_OPENAI_KEY = "{{ lookup('community.general.onepassword', 'karakeep-secrets', field='openai_api_key', vault='fzymgc-house') }}"

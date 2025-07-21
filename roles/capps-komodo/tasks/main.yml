@@ -24,7 +24,7 @@
   with_items:
     - cert: "{{ lookup('community.general.onepassword', 'fzymgc-root-ca', field='cert', vault='fzymgc-house') }}"
       name: "fzymgc-root-ca.crt"
-    - cert: "{{ lookup('community.general.onepassword', 'fzymgc-ica1-ca', field='fullchain', vault='fzymgc-house') }}"
+    - cert: "{{ lookup('community.general.onepassword', 'fzymgc-ica1-ca', field='cert', vault='fzymgc-house') }}"
       name: "fzymgc-ica1-ca.crt"
   notify: Update CA certificates
 
@@ -65,6 +65,7 @@
     owner: "{{ host_data_dir_owner }}"
     group: "{{ host_data_dir_group }}"
     mode: "0640"
+  notify: Restart komodo core container
 
 - name: Template compose file to compose dir
   ansible.builtin.template:
