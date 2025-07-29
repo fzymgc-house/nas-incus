@@ -1,0 +1,164 @@
+---
+description: General development practices - covers project structure, file organization, version control, documentation, and quality assurance
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# General Rules for NAS Infrastructure Project
+
+## Project Structure
+- Maintain consistent directory structure
+- Use descriptive file and directory names
+- Group related files together
+- Follow established patterns
+
+## File Organization
+- Keep configuration files at root level
+- Use subdirectories for complex components
+- Maintain logical file grouping
+- Use consistent file extensions
+
+## Naming Conventions
+- Use kebab-case for files and directories
+- Use snake_case for variables and functions
+- Use descriptive, meaningful names
+- Avoid abbreviations and acronyms
+
+## Version Control
+- Use meaningful commit messages
+- Commit related changes together
+- Use feature branches for development
+- Review changes before merging
+- Keep commits atomic and focused
+
+## Documentation
+- Document all major components
+- Include usage examples
+- Maintain up-to-date documentation
+- Use consistent documentation style
+- Include troubleshooting guides
+
+## Code Quality
+- Follow established coding standards
+- Use consistent formatting
+- Implement proper error handling
+- Write maintainable code
+- Include appropriate comments
+
+## Testing
+- Test all changes thoroughly
+- Include automated testing
+- Validate configurations
+- Test in multiple environments
+- Document test procedures
+
+## Security
+- Follow security best practices
+- Validate all inputs
+- Use secure defaults
+- Implement proper access controls
+- Monitor for security issues
+
+## Performance
+- Optimize for efficiency
+- Minimize resource usage
+- Use appropriate caching
+- Monitor performance metrics
+- Document performance considerations
+
+## Maintenance
+- Keep dependencies up to date
+- Regular security updates
+- Monitor for issues
+- Maintain backup procedures
+- Document maintenance procedures
+
+## Collaboration
+- Use clear communication
+- Document decisions
+- Share knowledge
+- Review code changes
+- Maintain team standards
+
+## Tools and Automation
+- Use appropriate tools for tasks
+- Automate repetitive processes
+- Implement CI/CD pipelines
+- Use linting and formatting tools
+- Monitor tool effectiveness
+
+## Environment Management
+- Use consistent environments
+- Document environment setup
+- Use version control for configurations
+- Implement proper isolation
+- Monitor environment health
+
+## Error Handling
+- Implement proper error handling
+- Provide meaningful error messages
+- Log errors appropriately
+- Include recovery procedures
+- Document error scenarios
+
+## Monitoring and Logging
+- Implement comprehensive logging
+- Monitor system health
+- Use appropriate log levels
+- Implement alerting
+- Review logs regularly
+
+## Backup and Recovery
+- Implement backup procedures
+- Test recovery procedures
+- Document backup schedules
+- Monitor backup success
+- Maintain backup documentation
+
+## Compliance
+- Follow industry standards
+- Implement proper controls
+- Document compliance requirements
+- Regular compliance reviews
+- Maintain audit trails
+
+## Best Practices
+- Follow established patterns
+- Use proven solutions
+- Implement proper validation
+- Document assumptions
+- Regular code reviews
+
+## Common Patterns
+```yaml
+# Configuration pattern
+service_name:
+  enabled: true
+  port: 8080
+  log_level: info
+
+# Documentation pattern
+# Service: Service Name
+# Purpose: Brief description
+# Dependencies: List of dependencies
+# Configuration: Configuration options
+```
+
+## Quality Assurance
+- Implement code reviews
+- Use automated testing
+- Validate configurations
+- Monitor for issues
+- Regular quality assessments
+
+## Continuous Improvement
+- Review and improve processes
+- Learn from incidents
+- Update documentation
+- Implement feedback
+- Regular process reviews
+description:
+globs:
+alwaysApply: false
+---

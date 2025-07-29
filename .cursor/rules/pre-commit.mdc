@@ -1,0 +1,143 @@
+---
+description: Pre-commit hook configuration and usage - covers hook configuration, file checks, linting tools, security scanning, and integration guidelines
+globs:
+  - ".pre-commit-config.yaml"
+  - "*.yml"
+  - "*.yaml"
+  - "*.tf"
+  - "*.md"
+  - "*.sh"
+  - "*.py"
+  - "*.rb"
+alwaysApply: false
+---
+
+# Pre-commit Rules for NAS Infrastructure Project
+
+## Hook Configuration
+- Use `.pre-commit-config.yaml` for configuration
+- Minimum pre-commit version: 3.0.0
+- Set `fail_fast: false` for comprehensive checking
+- Use `default_stages: [pre-commit]`
+
+## General File Checks
+- **trailing-whitespace**: Remove trailing whitespace
+- **end-of-file-fixer**: Ensure files end with newline
+- **check-yaml**: Validate YAML syntax (exclude inventory/)
+- **check-added-large-files**: Limit file size to 1000KB
+- **check-case-conflict**: Prevent case conflicts
+- **check-merge-conflict**: Detect merge conflicts
+- **check-symlinks**: Validate symbolic links
+- **check-executables-have-shebangs**: Ensure scripts have shebangs
+- **check-shebang-scripts-are-executable**: Make scripts executable
+- **detect-private-key**: Scan for private keys (exclude .gitleaks.toml)
+
+## YAML Linting
+- Use `yamllint` with `.yamllint` configuration
+- Apply consistent formatting rules
+- Check for syntax errors
+- Validate YAML structure
+
+## Ansible Linting
+- Use `ansible-lint` for YAML files
+- Exclude external roles (geerlingguy.docker)
+- Apply production profile
+- Enable additional rules: args, empty-string-compare, no-log-password
+
+## Terraform Validation
+- **terraform_fmt**: Format Terraform files
+- **terraform_validate**: Validate Terraform syntax
+- **terraform_tflint**: Apply TFLint rules with `.tflint.hcl`
+- **terraform_tfsec**: Security scanning for Terraform
+
+## Shell Script Checks
+- Use `shellcheck` for shell scripts
+- Set severity to warning
+- Check for common shell script issues
+- Validate script syntax
+
+## Markdown Linting
+- Use `markdownlint` with `.markdownlint.json`
+- Apply automatic fixes
+- Check for formatting issues
+- Validate markdown syntax
+
+## Security Scanning
+- Use `gitleaks` for secret detection
+- Scan for hardcoded secrets
+- Exclude false positives
+- Maintain security standards
+
+## Python Code Formatting
+- Use `black` for Python code formatting
+- Set language version to python3
+- Apply consistent formatting
+- Check Python syntax
+
+## Ruby Linting
+- Use `rubocop` for Ruby files
+- Apply auto-correction
+- Check for Ruby best practices
+- Validate Ruby syntax
+
+## File Exclusions
+- Exclude `.cache/` directory
+- Exclude `.terraform/` directory
+- Exclude external roles
+- Exclude generated files
+
+## Hook Execution Order
+1. General file checks
+2. YAML linting
+3. Ansible linting
+4. Terraform validation
+5. Shell script checks
+6. Markdown linting
+7. Security scanning
+8. Language-specific formatting
+
+## Error Handling
+- Continue execution on non-critical errors
+- Provide clear error messages
+- Include fix suggestions
+- Log detailed error information
+
+## Performance Considerations
+- Use efficient hooks
+- Minimize execution time
+- Cache results when possible
+- Parallel execution where supported
+
+## Customization
+- Add project-specific hooks as needed
+- Configure hook parameters appropriately
+- Exclude files that don't need checking
+- Customize error thresholds
+
+## Maintenance
+- Keep hooks up to date
+- Review hook effectiveness
+- Remove unnecessary hooks
+- Update configurations as needed
+
+## Integration
+- Integrate with CI/CD pipelines
+- Use in development workflow
+- Apply to all contributors
+- Maintain consistency across environments
+
+## Common Issues
+- Handle large file exclusions
+- Manage false positives
+- Resolve hook conflicts
+- Update hook versions
+
+## Best Practices
+- Run pre-commit before committing
+- Fix issues automatically when possible
+- Document hook purposes
+- Maintain hook documentation
+description:
+globs:
+alwaysApply: false
+---

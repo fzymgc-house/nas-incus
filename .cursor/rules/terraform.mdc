@@ -1,0 +1,159 @@
+---
+description: Terraform rules for infrastructure code - covers module structure, naming conventions, variable management, security practices, and validation
+globs:
+  - "*.tf"
+  - "*.tfvars"
+  - "tf/**/*.tf"
+  - "tf/**/*.tfvars"
+  - "modules/**/*.tf"
+  - "modules/**/*.tfvars"
+alwaysApply: false
+---
+
+# Terraform Rules for NAS Infrastructure Project
+
+## Project Structure
+- Keep Terraform code in `tf/` directory
+- Use modular structure with `modules/` subdirectory
+- Separate concerns: base, profiles, services
+- Use consistent file naming: `main.tf`, `variables.tf`, `outputs.tf`, `versions.tf`
+
+## Module Structure Standards
+Each module should follow this structure:
+```
+modules/{module-name}/
+├── main.tf           # Main resource definitions
+├── variables.tf      # Input variables
+├── outputs.tf        # Output values
+├── versions.tf       # Provider and version constraints
+└── README.md         # Module documentation
+```
+
+## Naming Conventions
+- **Resources**: Use snake_case (e.g., `incus_instance`, `incus_network`)
+- **Variables**: Use snake_case (e.g., `container_bridge_network_name`)
+- **Modules**: Use kebab-case (e.g., `nas-app-proxy`, `github-runner`)
+- **Files**: Use descriptive names with standard extensions
+
+## Resource Naming
+- Use descriptive names that indicate purpose
+- Include environment or service context
+- Follow pattern: `{resource_type}.{service_name}`
+
+## Variable Management
+- Define all variables in `variables.tf`
+- Use proper variable types and validation
+- Provide meaningful descriptions
+- Use `sensitive = true` for sensitive variables
+- Set appropriate defaults when possible
+
+## Output Guidelines
+- Export only necessary values
+- Use descriptive output names
+- Include proper descriptions
+- Consider what other modules might need
+
+## Provider Configuration
+- Use `versions.tf` for provider constraints
+- Pin provider versions for stability
+- Configure providers in `providers.tf`
+- Use consistent provider configuration across modules
+
+## Module Dependencies
+- Use `depends_on` for explicit dependencies
+- Pass required values through variables
+- Avoid circular dependencies
+- Use data sources for cross-module references
+
+## State Management
+- Use workspace `incus-nas` for this project
+- Keep state files in `.terraform/`
+- Use remote state when appropriate
+- Version control `.terraform.lock.hcl`
+
+## Security Practices
+- Never hardcode sensitive values
+- Use variables for all configurable values
+- Validate input variables
+- Use data sources for external references
+
+## Documentation
+- Each module must have a README.md
+- Document all variables and outputs
+- Include usage examples
+- Document dependencies and requirements
+
+## Linting Compliance
+- Follow `.tflint.hcl` configuration
+- Use `terraform fmt` for formatting
+- Validate with `terraform validate`
+- Use `terraform plan` before applying
+
+## Pre-commit Integration
+- All `.tf` files are formatted with terraform_fmt
+- Validation runs on all Terraform files
+- TFLint checks for best practices
+- TFsec scans for security issues
+
+## Common Patterns
+```hcl
+# Module definition with dependencies
+module "service-name" {
+  depends_on = [module.base]
+  source     = "./modules/service-name"
+
+  # Pass required variables
+  container_bridge_network_name = module.base.container_bridge_network_name
+}
+
+# Variable definition with validation
+variable "server_name" {
+  description = "Name of the server instance"
+  type        = string
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]+$", var.server_name))
+    error_message = "Server name must contain only lowercase letters, numbers, and hyphens."
+  }
+}
+
+# Output definition
+output "service_endpoint" {
+  description = "Service endpoint URL"
+  value       = "https://${var.domain_name}"
+}
+```
+
+## Import Strategy
+- Use `import` blocks for existing resources
+- Document import mappings clearly
+- Import resources in dependency order
+- Use descriptive import IDs
+
+## Resource Configuration
+- Use consistent resource naming
+- Include proper descriptions
+- Set appropriate lifecycle rules
+- Use data sources for external references
+
+## Error Handling
+- Validate variable inputs
+- Use conditional logic when needed
+- Handle resource dependencies properly
+- Provide meaningful error messages
+
+## Performance Considerations
+- Use `for_each` for multiple similar resources
+- Minimize data source calls
+- Use local values for computed expressions
+- Consider resource dependencies
+
+## Testing
+- Use `terraform plan` to validate changes
+- Test with different variable combinations
+- Validate module outputs
+- Check for security issues with TFsec
+description:
+globs:
+alwaysApply: false
+---
