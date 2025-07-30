@@ -27,19 +27,19 @@ module "github-runners" {
 module "github-runners" {
   source                        = "./modules/github-runner"
   container_bridge_network_name = "nas-internal-network"
-  
+
   # Create 3 runner instances
   runner_count = 3
   runner_name  = "ci-runner"
-  
+
   # Customize resources
   cpu_cores    = "8"
   memory_limit = "16GiB"
   disk_size    = "100GiB"
-  
+
   # Use custom storage pool
   storage_pool = "fast-nvme-pool"
-  
+
   # Pin specific image version
   container_image = "images:ubuntu/oracular/cloud/20250712_07:42"
 }
@@ -101,15 +101,18 @@ See the Ansible `github-runner` role for automated setup.
 ## Troubleshooting
 
 ### Container fails to start
+
 - Check if the storage pool exists: `incus storage list`
 - Verify the base profile exists: `incus profile list`
 - Ensure sufficient resources on the host
 
 ### Network connectivity issues
+
 - Verify bridge network exists: `incus network list`
 - Check container network configuration: `incus config device show <container-name>`
 
 ### Resource allocation errors
+
 - Check available host resources before increasing limits
 - Ensure CPU cores don't exceed host capacity
 - Verify storage pool has sufficient free space
