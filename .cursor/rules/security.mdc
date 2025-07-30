@@ -1,0 +1,140 @@
+---
+description: Security best practices and guidelines - covers secret management, access control, network security, infrastructure security, and compliance requirements
+globs:
+  - "*.yml"
+  - "*.yaml"
+  - "*.tf"
+  - "*.tfvars"
+  - "*.md"
+  - "*.sh"
+  - "roles/**/*"
+  - "modules/**/*"
+  - "inventory/**/*"
+alwaysApply: false
+---
+
+# Security Rules for NAS Infrastructure Project
+
+## Secret Management
+- **Never commit secrets to version control**
+- Use `ansible-vault` for encrypted variables
+- Store vault passwords securely
+- Use `.ansible_vault_password` for automation
+- Rotate secrets regularly
+
+## Secret Detection
+- Use `gitleaks` for automated secret scanning
+- Configure `.gitleaks.toml` for project-specific patterns
+- Exclude false positives appropriately
+- Scan all commits and pull requests
+- Monitor for accidental secret exposure
+
+## Access Control
+- Use principle of least privilege
+- Implement proper user permissions
+- Use sudo for elevated privileges
+- Document access requirements
+- Review access regularly
+
+## Network Security
+- Use secure network configurations
+- Implement proper firewall rules
+- Use encrypted connections (SSH, HTTPS)
+- Monitor network traffic
+- Document network architecture
+
+## Configuration Security
+- Validate all input variables
+- Use secure defaults
+- Implement proper error handling
+- Document security considerations
+- Test security configurations
+
+## Infrastructure Security
+- Use secure container configurations
+- Implement proper resource limits
+- Use read-only filesystems where possible
+- Monitor resource usage
+- Implement proper logging
+
+## Code Security
+- Use secure coding practices
+- Validate all inputs
+- Implement proper error handling
+- Use secure defaults
+- Document security assumptions
+
+## Terraform Security
+- Use `tfsec` for security scanning
+- Validate Terraform configurations
+- Use secure provider configurations
+- Implement proper state management
+- Monitor for security issues
+
+## Ansible Security
+- Use vault for sensitive data
+- Validate playbook security
+- Use secure module configurations
+- Implement proper error handling
+- Document security practices
+
+## Monitoring and Logging
+- Implement comprehensive logging
+- Monitor for security events
+- Use centralized logging
+- Implement alerting
+- Review logs regularly
+
+## Incident Response
+- Document incident response procedures
+- Implement proper escalation
+- Use secure communication channels
+- Maintain incident logs
+- Review and improve procedures
+
+## Compliance
+- Follow security best practices
+- Implement proper documentation
+- Use secure development practices
+- Maintain audit trails
+- Regular security reviews
+
+## Common Security Patterns
+```yaml
+# Secure variable definition
+sensitive_variable: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  encrypted_content_here
+
+# Secure task execution
+- name: Execute secure command
+  ansible.builtin.command: secure_command
+  no_log: true
+  become: true
+  become_user: secure_user
+```
+
+## Security Tools Integration
+- Integrate with pre-commit hooks
+- Use automated security scanning
+- Implement continuous security monitoring
+- Use security-focused linting
+- Regular security assessments
+
+## Best Practices
+- Regular security updates
+- Implement defense in depth
+- Use secure communication
+- Monitor for vulnerabilities
+- Maintain security documentation
+
+## Documentation Requirements
+- Document security configurations
+- Include security considerations
+- Document access controls
+- Maintain security procedures
+- Regular security reviews
+description:
+globs:
+alwaysApply: false
+---

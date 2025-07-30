@@ -1,0 +1,135 @@
+---
+description: YAML formatting and structure rules - covers formatting standards, YAML structure, Ansible-specific guidelines, and security considerations
+globs:
+  - "*.yml"
+  - "*.yaml"
+  - ".yamllint"
+  - ".pre-commit-config.yaml"
+  - "ansible.cfg"
+alwaysApply: false
+---
+
+# YAML Rules for NAS Infrastructure Project
+
+## Formatting Standards
+- Use 2-space indentation consistently
+- Maximum line length: 120 characters
+- Use Unix line endings (LF)
+- Include trailing newline at end of files
+
+## YAML Structure
+- Use consistent document markers (`---`)
+- Properly quote strings when needed
+- Use consistent bracket and brace spacing
+- Maintain proper key ordering
+
+## Comments
+- Start comments with space after `#`
+- Use descriptive comments for complex sections
+- Comment YAML documents with purpose
+- Include section headers for organization
+
+## Key-Value Pairs
+- Use consistent spacing around colons
+- Quote values when they contain special characters
+- Use proper YAML types (boolean, integer, string)
+- Avoid unnecessary quotes for simple strings
+
+## Lists and Dictionaries
+- Use consistent indentation for nested structures
+- Align list items properly
+- Use proper YAML syntax for complex structures
+- Maintain readability with appropriate spacing
+
+## Ansible-Specific Guidelines
+- Use `ansible.builtin` and `community.general` modules
+- Include proper task names with prefixes
+- Use tags for selective execution
+- Include `changed_when` and `failed_when` for commands
+
+## Variable Definitions
+- Use snake_case for variable names
+- Provide meaningful descriptions
+- Use proper variable types
+- Include validation when appropriate
+
+## Template Variables
+- Use consistent variable naming
+- Include proper defaults
+- Use descriptive variable names
+- Document variable purposes
+
+## Security Considerations
+- Never include sensitive data in plain text
+- Use vault for encrypted variables
+- Validate input variables
+- Use `no_log: true` for sensitive tasks
+
+## Linting Compliance
+- Follow `.yamllint` configuration
+- Use `yamllint` for validation
+- Check for trailing spaces
+- Validate YAML syntax
+
+## Pre-commit Integration
+- All YAML files are linted with yamllint
+- Exclude generated files from linting
+- Use consistent formatting rules
+- Check for syntax errors
+
+## Common Patterns
+```yaml
+# Task definition
+- name: Execute command with validation
+  ansible.builtin.command: some_command
+  register: command_result
+  changed_when: command_result.rc == 0
+  failed_when: command_result.rc != 0
+
+# Variable definition
+variable_name: value
+complex_variable:
+  nested_key: nested_value
+  list_item:
+    - item1
+    - item2
+
+# Template with variables
+template_config:
+  service_name: "{{ service_name }}"
+  port: "{{ service_port | default(8080) }}"
+```
+
+## File Organization
+- Group related tasks together
+- Use consistent section headers
+- Maintain logical flow
+- Include proper documentation
+
+## Error Handling
+- Use proper error conditions
+- Include meaningful error messages
+- Handle edge cases appropriately
+- Use conditional logic when needed
+
+## Performance Considerations
+- Minimize unnecessary tasks
+- Use efficient module calls
+- Avoid redundant operations
+- Consider parallel execution when possible
+
+## Documentation
+- Include file headers with purpose
+- Document complex logic
+- Use descriptive names
+- Include usage examples
+
+## Validation
+- Validate YAML syntax before committing
+- Check for common errors
+- Use linting tools
+- Test with different YAML parsers
+description:
+globs:
+alwaysApply: false
+---

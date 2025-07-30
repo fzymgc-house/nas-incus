@@ -1,0 +1,89 @@
+---
+# .pre-commit-config.yaml
+# Pre-commit hooks for NAS infrastructure project
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+        exclude: inventory/
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: detect-private-key
+        exclude: \.gitleaks\.toml
+
+  # YAML linting
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.37.1
+    hooks:
+      - id: yamllint
+        args: [-c=.yamllint]
+
+  # Terraform formatting and validation
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.99.5
+    hooks:
+      - id: terraform_fmt
+        files: \.tf(vars)?$
+        exclude: \.terraform/
+      - id: terraform_validate
+        files: \.tf$
+        exclude: \.terraform/
+      - id: terraform_tflint
+        files: \.tf$
+        exclude: \.terraform/
+        args:
+          - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
+      - id: terraform_tfsec
+        files: \.tf$
+        exclude: \.terraform/
+
+  # Shell script checks
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+        args: [--severity=warning]
+
+  # Markdown linting
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.45.0
+    hooks:
+      - id: markdownlint
+        args: [--fix]
+
+  # Secret scanning
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.28.0
+    hooks:
+      - id: gitleaks
+
+  # Python code formatting (for any Python scripts)
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black
+        language_version: python3
+
+  # Ruby linting (for AreMUSH)
+  - repo: https://github.com/rubocop/rubocop
+    rev: v1.79.0
+    hooks:
+      - id: rubocop
+        args: [--auto-correct]
+        files: \.rb$
+
+# Configuration
+default_stages: [pre-commit]
+fail_fast: false
+minimum_pre_commit_version: 3.0.0

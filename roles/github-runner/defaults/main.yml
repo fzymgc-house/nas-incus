@@ -2,20 +2,20 @@
 # Default variables for GitHub runner role
 
 # Runner version - update this to use latest version
-github_runner_version: "2.321.0"
+github_runner_version: 2.321.0
 
 # Runner architecture
-github_runner_arch: "linux-x64"
+github_runner_arch: linux-x64
 
 # Base directory for runner installation
-github_runner_base_dir: "/home/runner"
+github_runner_base_dir: /home/runner
 
 # Runner working directory
 github_runner_dir: "{{ github_runner_base_dir }}/actions-runner"
 
 # Runner user (created by cloud-init)
-github_runner_user: "runner"
-github_runner_group: "runner"
+github_runner_user: runner
+github_runner_group: runner
 
 # Runner configuration
 github_runner_name: "{{ inventory_hostname }}"
@@ -31,7 +31,7 @@ github_runner_repo: ""
 github_runner_registration_token: ""
 
 # Runner service name
-github_runner_service_name: "github-runner"
+github_runner_service_name: github-runner
 
 # Auto-update behavior
 github_runner_allow_update: true
@@ -43,4 +43,5 @@ github_runner_work_dir: "{{ github_runner_base_dir }}/workspace"
 github_runner_packages_to_install: []
 
 # Runner download URL
-github_runner_download_url: "https://github.com/actions/runner/releases/download/v{{ github_runner_version }}/actions-runner-{{ github_runner_arch }}-{{ github_runner_version }}.tar.gz"
+github_runner_download_url: >-
+  https://github.com/actions/runner/releases/download/v{{ github_runner_version }}/actions-runner-{{ github_runner_arch }}-{{ github_runner_version }}.tar.gz

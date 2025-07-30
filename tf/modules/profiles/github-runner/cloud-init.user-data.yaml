@@ -1,3 +1,4 @@
+---
 #cloud-config
 groups:
   - apps: [root]
@@ -6,8 +7,8 @@ groups:
 ntp:
   enabled: true
   ntp_client: chrony
-  pools: [0.us.pool.ntp.org,1.us.pool.ntp.org]
-  servers: [ 192.168.20.1, 192.168.20.151, 192.168.20.152, 192.168.20.153 ]
+  pools: [0.us.pool.ntp.org, 1.us.pool.ntp.org]
+  servers: [192.168.20.1, 192.168.20.151, 192.168.20.152, 192.168.20.153]
 no_ssh_fingerprints: true
 package_update: true
 package_upgrade: true
@@ -46,11 +47,11 @@ users:
     gecos: fzymgc
     primary_group: fzymgc
     groups: [adm, cdrom, dip, lxd, sudo]
-    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    sudo: ALL=(ALL) NOPASSWD:ALL
     lock_passwd: true
     shell: /bin/bash
     ssh_authorized_keys:
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILlE7jt0Nv9CBg2djK6SNR253ZmkvssUECHHVs/bKz5O
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILlE7jt0Nv9CBg2djK6SNR253ZmkvssUECHHVs/bKz5O
   - name: apps
     primary_group: apps
     uid: 568
@@ -71,7 +72,7 @@ write_files:
   # - primary_dns_server: 192.168.20.1
   # - primary_domain: fzymgc.house
   - path: /etc/systemd/resolved.conf
-    owner: 'root:root'
+    owner: root:root
     permissions: '0644'
     content: |
       #  This file is part of systemd.
@@ -122,71 +123,71 @@ write_files:
         "storage-driver": "overlay2"
       }
   - path: /usr/local/bin/log-action
-    owner: 'root:root'
+    owner: root:root
     permissions: '0755'
     content: |
       #!/bin/bash
       set -euo pipefail
-      
+
       # Structured logging helper for cloud-init actions
       readonly LOGFILE="/var/log/cloud-init-structured.log"
       readonly TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
       readonly LEVEL="${1:-INFO}"
       readonly COMPONENT="${2:-cloud-init}"
       MESSAGE="${3:-No message provided}"
-      
+
       # Escape special characters for JSON
       MESSAGE=$(printf '%s' "$MESSAGE" | sed 's/["\\]/\\&/g' | sed ':a;N;$!ba;s/\n/\\n/g')
-      
+
       # Validate log level
       case "$LEVEL" in
         INFO|WARN|ERROR) ;;
         *) echo "Invalid log level: $LEVEL" >&2; exit 1 ;;
       esac
-      
+
       # Output JSON log entry
       printf '{"timestamp":"%s","level":"%s","component":"%s","message":"%s"}\n' \
         "$TIMESTAMP" "$LEVEL" "$COMPONENT" "$MESSAGE" | tee -a "$LOGFILE"
   - path: /usr/local/bin/github-runner-health-check
-    owner: 'root:root'
+    owner: root:root
     permissions: '0755'
     content: |
       #!/bin/bash
       set -euo pipefail
-      
+
       # GitHub Runner health check script
       # Returns 0 if healthy, non-zero if unhealthy
-      
+
       readonly LOGFILE="/var/log/github-runner-health.log"
       readonly TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-      
+
       # Function to log health check results
       log_health() {
         local status="$1"
         local component="$2"
         local message="$3"
-        
+
         # Escape message for JSON
         message=$(printf '%s' "$message" | sed 's/["\\]/\\&/g' | sed ':a;N;$!ba;s/\n/\\n/g')
-        
+
         printf '{"timestamp":"%s","status":"%s","component":"%s","message":"%s"}\n' \
           "$TIMESTAMP" "$status" "$component" "$message" >> "$LOGFILE"
       }
-      
+
       # Check if Docker is running
       if ! systemctl is-active --quiet docker; then
         log_health "FAIL" "docker" "Docker service is not running"
         exit 1
       fi
       log_health "OK" "docker" "Docker service is running"
-      
+
       # Check if Docker daemon is responsive
       if ! docker info >/dev/null 2>&1; then
         log_health "FAIL" "docker" "Docker daemon is not responsive"
         exit 2
       fi
       log_health "OK" "docker" "Docker daemon is responsive"
-      
+
       # Check if runner service is configured (if exists)
       if systemctl list-unit-files | grep -q github-runner.service; then
         if systemctl is-active --quiet github-runner; then
@@ -197,7 +198,7 @@ write_files:
       else
         log_health "INFO" "runner" "GitHub runner service not yet installed"
       fi
-      
+
       # Check disk space
       DISK_USAGE=$(df -h /home/runner 2>/dev/null | awk 'NR==2 {gsub(/%/,"",$5); print $5}')
       if [ -n "${DISK_USAGE}" ] && [ "${DISK_USAGE}" -gt 90 ]; then
@@ -205,7 +206,7 @@ write_files:
       else
         log_health "OK" "disk" "Disk usage is acceptable: ${DISK_USAGE}%"
       fi
-      
+
       # Check memory usage
       MEM_AVAILABLE=$(free -m | awk 'NR==2 {print $7}')
       MEM_TOTAL=$(free -m | awk 'NR==2 {print $2}')
@@ -214,35 +215,35 @@ write_files:
       else
         log_health "OK" "memory" "Memory available: ${MEM_AVAILABLE}MB of ${MEM_TOTAL}MB"
       fi
-      
+
       # Overall health status
       log_health "OK" "overall" "Health check completed successfully"
       exit 0
   - path: /etc/systemd/system/github-runner-health.service
-    owner: 'root:root'
+    owner: root:root
     permissions: '0644'
     content: |
       [Unit]
       Description=GitHub Runner Health Check
       After=multi-user.target
-      
+
       [Service]
       Type=oneshot
       ExecStart=/usr/local/bin/github-runner-health-check
       StandardOutput=journal
       StandardError=journal
   - path: /etc/systemd/system/github-runner-health.timer
-    owner: 'root:root'
+    owner: root:root
     permissions: '0644'
     content: |
       [Unit]
       Description=Run GitHub Runner Health Check every 5 minutes
       Requires=github-runner-health.service
-      
+
       [Timer]
       OnBootSec=2min
       OnUnitActiveSec=5min
-      
+
       [Install]
       WantedBy=timers.target
 
@@ -250,7 +251,7 @@ write_files:
 runcmd:
   # Initialize structured logging
   - /usr/local/bin/log-action INFO system "Starting cloud-init configuration for GitHub runner"
-  
+
   # System configuration
   - groupmod -g 568 apps && /usr/local/bin/log-action INFO system "Modified apps group GID" || /usr/local/bin/log-action ERROR system "Failed to modify apps group GID"
   - systemctl enable --now ssh && /usr/local/bin/log-action INFO system "Enabled and started SSH service" || /usr/local/bin/log-action ERROR system "Failed to enable SSH service"
@@ -258,6 +259,7 @@ runcmd:
   - /usr/local/bin/log-action INFO docker "Enabling Docker service"
   - systemctl enable docker || { /usr/local/bin/log-action ERROR docker "Failed to enable Docker service"; echo "Error: Failed to enable Docker service"; }
   - systemctl start docker || { /usr/local/bin/log-action ERROR docker "Failed to start Docker service"; echo "Error: Failed to start Docker service"; }
+  - systemctl enable --now ssh || { /usr/local/bin/log-action ERROR system "Failed to enable SSH service"; echo "Error: Failed to enable SSH service"; }
 
   # Verify Docker is running before adding user to group
   - |
@@ -341,10 +343,10 @@ runcmd:
 
   # Don't enable the service yet - Ansible will handle registration and enablement
   - systemctl daemon-reload && /usr/local/bin/log-action INFO systemd "Reloaded systemd daemon" || /usr/local/bin/log-action ERROR systemd "Failed to reload systemd daemon"
-  
+
   # Enable health check monitoring
   - systemctl enable github-runner-health.timer && /usr/local/bin/log-action INFO monitoring "Enabled health check timer" || /usr/local/bin/log-action ERROR monitoring "Failed to enable health check timer"
   - systemctl start github-runner-health.timer && /usr/local/bin/log-action INFO monitoring "Started health check timer" || /usr/local/bin/log-action ERROR monitoring "Failed to start health check timer"
-  
+
   # Log completion
   - /usr/local/bin/log-action INFO system "Cloud-init configuration completed successfully"

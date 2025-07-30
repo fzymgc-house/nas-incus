@@ -27,8 +27,8 @@
     host_dns: "{{ network_eth0.dns | default(omit) }}"
     host_ipv6_privacy_extensions: "{{ network_eth0.ipv6_privacy_extensions | default('no') }}"
     use_dhcp_routes: "{{ network_eth0.use_dhcp_routes | default('yes') }}"
-    dns_address: "{{ network_eth0.dns_address | default(omit) }}"
-    dns_domain: "{{ network_eth0.dns_domain | default(omit) }}"
+    dns_address: "{{ network_eth0.dns_address | default('') }}"
+    dns_domain: "{{ network_eth0.dns_domain | default('') }}"
   notify:
     - Reconfigure eth0
     - Restart systemd-resolved
@@ -54,7 +54,7 @@
     - Restart systemd-resolved
   tags: network
 
-- meta: flush_handlers
+- ansible.builtin.meta: flush_handlers
 
 - name: Update apt cache
   ansible.builtin.apt:
@@ -86,12 +86,26 @@
     password: "*"
     password_lock: true
 
+- name: Create apps group
+  ansible.builtin.group:
+    name: apps
+    gid: 568
+
+- name: Create apps user
+  ansible.builtin.user:
+    name: apps
+    shell: /usr/bin/bash
+    uid: 568
+    group: apps
+    password: "*"
+    password_lock: true
+
 - name: Create sudoers.d file for users so they do not need a password
   ansible.builtin.copy:
     content: "{{ item }} ALL=(ALL) NOPASSWD:ALL"
     dest: /etc/sudoers.d/{{ item }}
     mode: "0440"
-  with_items:
+  loop:
     - fzymgc
 
 - name: Add ssh key to admin user
@@ -136,7 +150,7 @@
     state: present
     backrefs: true
   register: unattended_upgrades_settings_set
-  with_items:
+  loop:
     - '^(//)?\s+("\${distro_id}:\${distro_codename}-updates";)'
     - '^(//)?\s+("\${distro_id}:\${distro_codename}-proposed";)'
     - '^(//)?\s+("\${distro_id}:\${distro_codename}-backports";)'
@@ -174,7 +188,7 @@
   ansible.builtin.template:
     src: "fail2ban/{{ item }}-jail.conf.j2"
     dest: "/etc/fail2ban/jail.d/{{ item }}.conf"
-  with_items:
+  loop:
     - sshd
   notify: Restart fail2ban
   tags: fail2ban

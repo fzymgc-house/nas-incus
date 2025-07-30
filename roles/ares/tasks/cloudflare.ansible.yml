@@ -1,5 +1,5 @@
 - name: Configure cloudflare dns to point to edge node
-  ansible.builtin.cloudflare_dns:
+  community.general.cloudflare_dns:
     zone: muxserver.net
     type: CNAME
     name: "{{ game_host_name }}"

@@ -1,0 +1,77 @@
+---
+# .yamllint
+# YAML linting configuration for NAS infrastructure project
+
+extends: default
+
+rules:
+  # Line length
+  line-length:
+    max: 120
+    level: warning
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+
+  # Indentation
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: false
+
+  # Brackets and braces
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 0
+    min-spaces-inside-empty: -1
+    max-spaces-inside-empty: -1
+
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+    min-spaces-inside-empty: -1
+    max-spaces-inside-empty: -1
+
+  # Comments
+  comments:
+    require-starting-space: true
+    ignore-shebangs: true
+    min-spaces-from-content: 1
+
+  # Empty values
+  empty-values: enable
+
+  # Keys
+  key-duplicates: enable
+  key-ordering: disable
+
+  # New lines
+  new-line-at-end-of-file: enable
+  new-lines:
+    type: unix
+
+  # Trailing spaces
+  trailing-spaces: enable
+
+  # Truthy values
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no']
+    check-keys: false
+
+  # Document markers
+  document-start:
+    present: true
+    level: warning
+
+  # Quotes
+  quoted-strings:
+    quote-type: any
+    required: only-when-needed
+    allow-quoted-quotes: true
+
+# Ignore paths
+ignore: |
+  .cache/
+  .terraform/
+  roles/geerlingguy.docker/
+  *.generated.yml
+  inventory/

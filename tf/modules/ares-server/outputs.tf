@@ -14,7 +14,3 @@ output "instance_ipv6_address" {
   description = "IPv6 address of the Ares Server instance"
   value       = incus_instance.ares-server.ipv6_address
 }
-
-
-
-

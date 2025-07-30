@@ -14,7 +14,3 @@ output "instance_ipv6_address" {
   description = "IPv6 address of the NAS App Proxy instance"
   value       = incus_instance.nas-app-proxy.ipv6_address
 }
-
-
-
-

@@ -14,7 +14,3 @@ output "instance_ipv6_address" {
   description = "IPv6 address of the NAS Container Apps instance"
   value       = incus_instance.nas-container-apps.ipv6_address
 }
-
-
-
-

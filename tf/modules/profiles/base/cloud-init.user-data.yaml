@@ -1,11 +1,12 @@
+---
 #cloud-config
 groups:
   - apps: [root]
 ntp:
   enabled: true
   ntp_client: chrony
-  pools: [0.us.pool.ntp.org,1.us.pool.ntp.org]
-  servers: [ 192.168.20.1, 192.168.20.151, 192.168.20.152, 192.168.20.153 ]
+  pools: [0.us.pool.ntp.org, 1.us.pool.ntp.org]
+  servers: [192.168.20.1, 192.168.20.151, 192.168.20.152, 192.168.20.153]
 no_ssh_fingerprints: true
 package_update: true
 package_upgrade: true
@@ -32,11 +33,11 @@ users:
     gecos: fzymgc
     primary_group: fzymgc
     groups: [adm, cdrom, dip, lxd, sudo]
-    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    sudo: ALL=(ALL) NOPASSWD:ALL
     lock_passwd: true
     shell: /bin/bash
     ssh_authorized_keys:
-    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILlE7jt0Nv9CBg2djK6SNR253ZmkvssUECHHVs/bKz5O
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILlE7jt0Nv9CBg2djK6SNR253ZmkvssUECHHVs/bKz5O
   - name: apps
     primary_group: apps
     uid: 568
@@ -47,7 +48,7 @@ runcmd:
   - systemctl enable --now ssh
 write_files:
   - path: /etc/systemd/resolved.conf
-    owner: 'root:root'
+    owner: root:root
     permissions: '0644'
     content: |
       #  This file is part of systemd.
