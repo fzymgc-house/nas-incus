@@ -2,10 +2,9 @@
 collections:
   - name: community.general
     version: ">=10.7.1"
-  - name: "ansible.posix"
-  - name: "ansible.utils"
-  - name: "artis3n.tailscale"
+  - name: ansible.posix
+  - name: ansible.utils
+  - name: artis3n.tailscale
 
 roles:
   - src: geerlingguy.docker
-

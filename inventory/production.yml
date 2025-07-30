@@ -73,7 +73,7 @@ incus:
       ansible_hostname: doorsportal1
       ansible_host: "doorsportal1.{{ primary_domain }}"
       ansible_fqdn: "doorsportal1.{{ primary_domain }}"
-      game_host_name: "{{ ansible_fqdn }}"
+      game_host_name: "{{ ansible_fqdn.split(\".\")[0] }}"
       game_host_domain: muxserver.net
       game_host_port: 4211
       game_db_password: "{{ lookup('onepassword', 'aresmush-db-password-doorsportal1', vault='fzymgc-house', field='password') }}"
@@ -88,7 +88,7 @@ incus:
       ansible_hostname: precipice
       ansible_host: "precipice.{{ primary_domain }}"
       ansible_fqdn: "precipice.{{ primary_domain }}"
-      game_host_name: "{{ ansible_fqdn }}"
+      game_host_name: "{{ ansible_fqdn.split(\".\")[0] }}"
       game_host_domain: muxserver.net
       game_host_port: 4201
       game_db_password: "{{ lookup('onepassword', 'aresmush-db-password-precipice', vault='fzymgc-house', field='password') }}"
@@ -124,5 +124,3 @@ github_runners:
           34653661396664303833333834656361666636336162663066386531653930353933633831663465
           3439376365343932340a383066656237623238366133326365376364323334623937646137373962
           61636263326463613935623466363264626239633330636435313532306665303534
-
-

@@ -21,7 +21,7 @@
     owner: root
     group: root
     mode: "0644"
-  with_items:
+  loop:
     - cert: "{{ lookup('community.general.onepassword', 'fzymgc-root-ca', field='cert', vault='fzymgc-house') }}"
       name: "fzymgc-root-ca.crt"
     - cert: "{{ lookup('community.general.onepassword', 'fzymgc-ica1-ca', field='cert', vault='fzymgc-house') }}"
@@ -30,6 +30,20 @@
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
+
+- name: Create apps group
+  ansible.builtin.group:
+    name: apps
+    gid: 568
+
+- name: Create apps user
+  ansible.builtin.user:
+    name: apps
+    shell: /usr/bin/bash
+    uid: 568
+    group: apps
+    password: "*"
+    password_lock: true
 
 - name: Create komodo data directory
   ansible.builtin.file:
@@ -97,7 +111,7 @@
     owner: root
     group: root
     mode: "0755"
-  with_items:
+  loop:
     - backup-komodo.sh
     - restore-komodo.sh
 
@@ -147,4 +161,3 @@
     enabled: yes
     state: started
     daemon_reload: yes
-

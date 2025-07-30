@@ -11,15 +11,15 @@ LLMNR=yes
 MulticastDNS=yes
 LLDP=yes
 EmitLLDP=yes
-{% if dns_address is defined %}
+{% if dns_address is defined and dns_address != '' %}
 DNS={{ dns_address }}
 {% endif %}
-{% if dns_domain is defined %}
+{% if dns_domain is defined and dns_domain != '' %}
 Domains=~{{ dns_domain }}
 {% endif %}
 
 [DHCP]
 UseRoutes={{ use_dhcp_routes }}
-{% if dns_address is defined %}
+{% if dns_address is defined and dns_address != '' %}
 UseDNS=false
 {% endif %}

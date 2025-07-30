@@ -52,9 +52,9 @@
   ansible.builtin.apt:
     name: "{{ item }}"
     state: present
-  with_items:
-  - xcaddy
-  - golang
+  loop:
+    - xcaddy
+    - golang
 
 - name: Build custom caddy binary
   ansible.builtin.shell:

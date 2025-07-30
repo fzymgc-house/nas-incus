@@ -1,4 +1,5 @@
-#SPDX-License-Identifier: MIT-0
+---
+# SPDX-License-Identifier: MIT-0
 galaxy_info:
   author: fzymgc-house
   description: Deploy and configure Komodo container management platform on NAS infrastructure

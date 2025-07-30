@@ -1,0 +1,79 @@
+# .gitleaks.toml
+# Gitleaks configuration for secret detection
+
+title = "NAS Infrastructure Gitleaks Configuration"
+
+[extend]
+# Extend the base configuration
+useDefault = true
+
+# Custom rules for this project
+[[rules]]
+id = "ansible-vault"
+description = "Ansible Vault encrypted data"
+regex = '''(?i)\$ANSIBLE_VAULT'''
+tags = ["secret", "ansible"]
+
+[[rules]]
+id = "1password-reference"
+description = "1Password reference"
+regex = '''op://[a-zA-Z0-9-_/]+'''
+tags = ["secret", "1password"]
+
+[[rules]]
+id = "tailscale-key"
+description = "Tailscale auth key"
+regex = '''tskey-[a-zA-Z0-9-_]+'''
+tags = ["key", "tailscale"]
+
+[[rules]]
+id = "github-token"
+description = "GitHub personal access token"
+regex = '''ghp_[a-zA-Z0-9]{36}'''
+tags = ["token", "github"]
+
+[[rules]]
+id = "github-oauth"
+description = "GitHub OAuth token"
+regex = '''gho_[a-zA-Z0-9]{36}'''
+tags = ["token", "github"]
+
+[[rules]]
+id = "ssh-private-key"
+description = "SSH private key"
+regex = '''-----BEGIN (RSA|DSA|EC|OPENSSH) PRIVATE KEY-----'''
+tags = ["key", "ssh"]
+
+[[rules]]
+id = "pgp-private-key"
+description = "PGP private key"
+regex = '''-----BEGIN PGP PRIVATE KEY BLOCK-----'''
+tags = ["key", "pgp"]
+
+# Global allowlist configuration
+[allowlist]
+description = "Global allowlist patterns"
+paths = [
+    '''\.gitleaks\.toml''',
+    '''\.gitignore''',
+    '''roles/geerlingguy\.docker/.*''',
+    '''\.terraform/.*''',
+    '''\.git/.*''',
+]
+files = [
+    '''(.*?)(test|spec)(.*)''',
+]
+regexes = [
+    '''example''',
+    '''test''',
+    '''dummy''',
+    '''fake''',
+    '''localhost''',
+    '''127\.0\.0\.1''',
+    '''var\.[a-zA-Z0-9_-]+''',
+    '''\{\{.*\}\}''',
+    '''\{\%.*\%\}''',
+]
+commits = [
+    '''(?i)gitleaks:allow''',
+]

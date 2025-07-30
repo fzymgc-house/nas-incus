@@ -17,7 +17,7 @@
         site_upstream_tls=false,
         use_local_resolvers=true
       )) }}"
-    validate: "/usr/bin/caddy validate --adapter caddyfile --config %s"
+    validate: /usr/bin/caddy validate --adapter caddyfile --config %s
   notify:
     - Restart caddy
   tags:

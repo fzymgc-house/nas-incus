@@ -14,7 +14,3 @@ output "instance_ipv6_address" {
   description = "IPv6 address of the NAS Support instance"
   value       = incus_instance.nas-support.ipv6_address
 }
-
-
-
-

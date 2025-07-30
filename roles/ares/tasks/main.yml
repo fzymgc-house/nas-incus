@@ -52,7 +52,7 @@
     owner: ares
     group: ares
     force: false
-  with_fileglob: "/etc/skel/.*"
+  loop: "{{ lookup('fileglob', '/etc/skel/.*', wantlist=True) }}"
   when: ares_profile_exists.stat.exists == false
 
 - name: Add caddy to ares group
@@ -73,8 +73,8 @@
     content: "{{ item }} ALL=(ALL) NOPASSWD:ALL"
     dest: /etc/sudoers.d/{{ item }}
     mode: "0440"
-  with_items:
-  - ares
+  loop:
+    - ares
 
 - name: Install RVM
   become_user: ares
@@ -150,7 +150,7 @@
     mode: "0755"
     owner: ares
     group: ares
-  with_fileglob: /home/ares/aresmush/bin/*
+  loop: "{{ lookup('fileglob', '/home/ares/aresmush/bin/*', wantlist=True) }}"
 
 - name: Ensure web-portal bin dir files are executable
   ansible.builtin.file:
@@ -158,7 +158,7 @@
     mode: "0755"
     owner: ares
     group: ares
-  with_fileglob: /home/ares/ares-webportal/bin/*
+  loop: "{{ lookup('fileglob', '/home/ares/ares-webportal/bin/*', wantlist=True) }}"
 
 - name: Ensure valkey dir is owned by valkey
   ansible.builtin.file:
@@ -188,7 +188,7 @@
   tags:
   - valkey
 
-- meta: flush_handlers
+- ansible.builtin.meta: flush_handlers
   tags: always
 
 - name: Bootstrap configure ares
@@ -264,9 +264,9 @@
     mode: "0755"
     owner: ares
     group: ares
-  with_items:
-  - start-ares.sh
-  - stop-ares.sh
+  loop:
+    - start-ares.sh
+    - stop-ares.sh
 
 - name: Create aresmush systemd unit
   ansible.builtin.template:
@@ -285,16 +285,16 @@
 
 - ansible.builtin.import_tasks: cloudflare.ansible.yml
   tags:
-  - cloudflare
+    - cloudflare
 
 - ansible.builtin.import_tasks: edge-node-haproxy.ansible.yml
   tags:
-  - haproxy
-  - edge-node
-  - edge-node-haproxy
+    - haproxy
+    - edge-node
+    - edge-node-haproxy
 
-- import_tasks: edge-node-caddy.ansible.yml
+- ansible.builtin.import_tasks: edge-node-caddy.ansible.yml
   tags:
-  - edge-node-caddy
-  - edge-node
-  - caddy
+    - edge-node-caddy
+    - edge-node
+    - caddy

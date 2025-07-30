@@ -49,11 +49,11 @@ if [ -f "${BACKUP_DIR}/${BACKUP_NAME}_postgres.sql.gz" ]; then
     # Start only postgres service
     docker-compose up -d postgres
     sleep 10  # Wait for postgres to be ready
-    
+
     # Drop and recreate database
     docker exec "${PG_CONTAINER}" psql -U "${PG_USER}" -c "DROP DATABASE IF EXISTS ${PG_DB};"
     docker exec "${PG_CONTAINER}" psql -U "${PG_USER}" -c "CREATE DATABASE ${PG_DB};"
-    
+
     # Restore data
     gunzip -c "${BACKUP_DIR}/${BACKUP_NAME}_postgres.sql.gz" | docker exec -i "${PG_CONTAINER}" psql -U "${PG_USER}" "${PG_DB}"
 fi

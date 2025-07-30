@@ -44,7 +44,6 @@ resource "incus_profile" "github_runner" {
     "security.syscalls.intercept.mknod"    = true
     "security.syscalls.intercept.setxattr" = true
     # "security.privileged"                  = false  # Required for Docker-in-Docker - BROKEN in TrunNAS currently
-    "cloud-init.user-data"                 = file("${path.module}/github-runner/cloud-init.user-data.yaml")
+    "cloud-init.user-data" = file("${path.module}/github-runner/cloud-init.user-data.yaml")
   }
 }
-

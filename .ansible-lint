@@ -1,0 +1,67 @@
+# .ansible-lint
+---
+# Ansible-lint configuration for NAS infrastructure project
+
+profile: production
+
+# Paths to exclude from linting
+exclude_paths:
+  - .cache/
+  - .github/
+  - roles/geerlingguy.docker/  # External role
+  - .cursor/
+
+# Enable additional rules
+enable_list:
+  - args
+  - empty-string-compare
+  - no-log-password
+  - no-same-owner
+  - name[prefix]
+  - yaml[comments]
+  - yaml[key-duplicates]
+
+# Rules to skip
+skip_list:
+  - meta-no-info  # Allow roles without meta/main.yml info
+  - role-name[path]  # Allow roles in subdirectories
+  - yaml[line-length]  # Long lines are sometimes necessary
+
+# Custom tags to ignore
+tags:
+  - skip_ansible_lint
+
+# Ansible configuration
+# Use same settings as ansible.cfg
+parseable: true
+use_default_rules: true
+rulesdir: []
+
+# Task name checking
+task_name_prefix: '{stem} | '
+
+# Variable naming patterns
+var_naming_pattern: "^[a-z_][a-z0-9_]*$"
+
+# Mock modules/roles
+mock_modules:
+  - community.general.op_item_get
+  - community.general.mail
+
+mock_roles:
+  - geerlingguy.docker
+
+# Custom kinds (file types)
+kinds:
+  - playbook: "*.yml"
+  - playbook: "*.yaml"
+  - tasks: "*/tasks/*.yml"
+  - tasks: "*/tasks/*.yaml"
+  - handlers: "*/handlers/*.yml"
+  - handlers: "*/handlers/*.yaml"
+  - vars: "*/vars/*.yml"
+  - vars: "*/vars/*.yaml"
+  - defaults: "*/defaults/*.yml"
+  - defaults: "*/defaults/*.yaml"
+  - meta: "*/meta/*.yml"
+  - meta: "*/meta/*.yaml"

@@ -181,3 +181,62 @@ tags
 
 .claude/settings.local.json
 
+# VS Code
+.vscode/
+*.code-workspace
+
+# Log files
+*.log
+logs/
+*.log.*
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+*.temp
+*~
+
+# Security - Private keys and passwords
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+vault-password.txt
+vault-password
+.vault-pass
+ansible-vault-password
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+ENV/
+env/
+
+# Ansible specific
+*.retry
+ansible.log
+inventory.local
+
+# Terraform local files
+.terraform.lock.hcl
+*.auto.tfvars
+terraform.tfplan
+terraform.tfstate.d/
+.terragrunt-cache/
+
+# 1Password
+.op/
