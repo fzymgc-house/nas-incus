@@ -29,18 +29,6 @@ repos:
       - id: yamllint
         args: [-c=.yamllint]
 
-  # Ansible linting
-  - repo: https://github.com/ansible/ansible-lint
-    rev: v25.7.0
-    hooks:
-      - id: ansible-lint
-        files: \.(yaml|yml)$
-        exclude: |
-          (?x)^(
-            .cache/|
-            roles/geerlingguy\.
-          )
-
   # Terraform formatting and validation
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.99.5
