@@ -27,6 +27,17 @@ resource "incus_storage_pool" "default" {
   }
 }
 
+resource "incus_storage_pool" "apps" {
+  name        = "apps"
+  description = "Custom Pool"
+  driver      = "zfs"
+  config = {
+    source          = "apps/incus-pool"
+    "zfs.pool_name" = "apps/incus-pool"
+  }
+}
+
+
 resource "incus_network" "incusbr0" {
   name = "incusbr0"
   type = "bridge"
@@ -35,19 +46,6 @@ resource "incus_network" "incusbr0" {
     "ipv4.nat"     = "true"
     "ipv6.address" = "fd42:cc9f:263:e8b2::1/64"
     "ipv6.nat"     = "true"
-  }
-}
-
-resource "incus_network" "cbr0" {
-  name        = "cbr0"
-  type        = "bridge"
-  description = "Container Apps Internal Bridge"
-  config = {
-    "ipv4.address" = "10.209.210.1/24"
-    "ipv4.nat"     = "false"
-    "ipv6.address" = "fd42:1b0c:1aa2:74e4::1/64"
-    "ipv6.nat"     = "false"
-    "dns.domain"   = "incus"
   }
 }
 

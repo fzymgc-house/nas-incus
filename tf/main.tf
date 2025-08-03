@@ -19,9 +19,13 @@ import {
   id = "default"
 }
 
+import {
+  to = module.base.incus_storage_pool.apps
+  id = "apps"
+}
+
 module "profiles" {
-  source                        = "./modules/profiles"
-  container_bridge_network_name = module.base.container_bridge_network_name
+  source = "./modules/profiles"
 }
 
 import {
@@ -29,24 +33,14 @@ import {
   id = "default"
 }
 
-
-module "nas-app-proxy" {
-  depends_on                    = [module.profiles]
-  source                        = "./modules/nas-app-proxy"
-  container_bridge_network_name = module.base.container_bridge_network_name
-}
-
-
 module "nas-support" {
-  depends_on                    = [module.profiles]
-  source                        = "./modules/nas-support"
-  container_bridge_network_name = module.base.container_bridge_network_name
+  depends_on = [module.profiles]
+  source     = "./modules/nas-support"
 }
 
 module "nas-container-apps" {
-  depends_on                    = [module.profiles]
-  source                        = "./modules/nas-container-apps"
-  container_bridge_network_name = module.base.container_bridge_network_name
+  depends_on = [module.profiles]
+  source     = "./modules/nas-container-apps"
 }
 
 module "doorsportal1-server" {

@@ -21,22 +21,21 @@ resource "incus_instance" "nas-support" {
   }
 
   device {
+    name = "root"
+    type = "disk"
+    properties = {
+      path = "/"
+      pool = "apps"
+    }
+  }
+
+  device {
     name = "eth0"
     type = "nic"
     properties = {
       nictype = "macvlan"
       parent  = "bond0"
       hwaddr  = "00:16:3e:ae:ff:00"
-    }
-  }
-
-  device {
-    name = "eth1"
-    type = "nic"
-    properties = {
-      parent  = var.container_bridge_network_name
-      nictype = "bridged"
-      hwaddr  = "00:16:3e:ae:ff:01"
     }
   }
 
@@ -65,4 +64,5 @@ resource "incus_instance" "nas-support" {
     nic   = "eth0"
     delay = "30s"
   }
+
 }

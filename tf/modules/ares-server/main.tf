@@ -19,6 +19,15 @@ resource "incus_instance" "ares-server" {
   }
 
   device {
+    name = "root"
+    type = "disk"
+    properties = {
+      path = "/"
+      pool = "apps"
+    }
+  }
+
+  device {
     name = "eth0"
     type = "nic"
     properties = {

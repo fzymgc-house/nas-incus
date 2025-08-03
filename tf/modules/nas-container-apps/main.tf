@@ -18,6 +18,15 @@ resource "incus_instance" "nas-container-apps" {
   }
 
   device {
+    name = "root"
+    type = "disk"
+    properties = {
+      path = "/"
+      pool = "apps"
+    }
+  }
+
+  device {
     name = "eth0"
     type = "nic"
     properties = {
@@ -26,17 +35,6 @@ resource "incus_instance" "nas-container-apps" {
       hwaddr  = "00:16:3e:ae:aa:01"
     }
   }
-
-  device {
-    name = "eth1"
-    type = "nic"
-    properties = {
-      parent  = var.container_bridge_network_name
-      nictype = "bridged"
-      hwaddr  = "00:16:3e:ae:ab:01"
-    }
-  }
-
   device {
     name = "data"
     type = "disk"

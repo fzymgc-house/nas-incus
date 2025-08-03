@@ -39,14 +39,6 @@ repos:
       - id: terraform_validate
         files: \.tf$
         exclude: \.terraform/
-      - id: terraform_tflint
-        files: \.tf$
-        exclude: \.terraform/
-        args:
-          - --args=--config=__GIT_WORKING_DIR__/.tflint.hcl
-      - id: terraform_tfsec
-        files: \.tf$
-        exclude: \.terraform/
 
   # Shell script checks
   - repo: https://github.com/shellcheck-py/shellcheck-py

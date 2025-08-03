@@ -17,7 +17,6 @@ This module creates Incus containers configured as GitHub Actions self-hosted ru
 ```hcl
 module "github-runners" {
   source                        = "./modules/github-runner"
-  container_bridge_network_name = "nas-internal-network"
 }
 ```
 
@@ -26,7 +25,6 @@ module "github-runners" {
 ```hcl
 module "github-runners" {
   source                        = "./modules/github-runner"
-  container_bridge_network_name = "nas-internal-network"
 
   # Create 3 runner instances
   runner_count = 3
@@ -49,7 +47,6 @@ module "github-runners" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|----------|
-| `container_bridge_network_name` | The name of the Incus bridge network | `string` | n/a | yes |
 | `runner_name` | Base name for runner instances | `string` | `"runner"` | no |
 | `runner_count` | Number of runner instances (1-10) | `number` | `1` | no |
 | `cpu_cores` | CPU cores per runner (1-32) | `string` | `"4"` | no |

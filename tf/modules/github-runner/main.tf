@@ -23,6 +23,15 @@ resource "incus_instance" "github_runner" {
     "limits.memory"         = var.memory_limit
   }
 
+  device {
+    name = "root"
+    type = "disk"
+    properties = {
+      path = "/"
+      pool = "apps"
+    }
+  }
+
   # External network interface for internet access
   device {
     name = "eth0"
