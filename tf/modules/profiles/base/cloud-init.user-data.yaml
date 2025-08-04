@@ -1,4 +1,3 @@
----
 #cloud-config
 groups:
   - apps: [root]
@@ -22,12 +21,13 @@ packages:
   - python3
   - python3-pip
   - python3-venv
+  - openssh-server
   - ssh
   - ssh-import-id
   - sudo
 ssh:
   emit_keys_to_console: false
-timezone: US/Eastern
+timezone: America/New_York
 users:
   - name: fzymgc
     gecos: fzymgc

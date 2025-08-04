@@ -1,0 +1,13 @@
+- name: Restart traefik
+  ansible.builtin.service:
+    name: traefik
+    state: restarted
+
+- name: Update CA certificates
+  ansible.builtin.command:
+    cmd: update-ca-certificates
+  changed_when: true
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true

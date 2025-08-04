@@ -1,0 +1,83 @@
+traefik_packages:
+  - curl
+  - debian-keyring
+  - debian-archive-keyring
+  - apt-transport-https
+  - ca-certificates
+
+traefik_user: traefik
+traefik_group: traefik
+
+traefik_config_directory: /etc/traefik
+traefik_config_file: traefik.yml
+traefik_config_owner: "{{ traefik_user }}"
+traefik_config_group: "{{ traefik_group }}"
+traefik_config_mode: 0640
+
+traefik_directory_mode: 0750
+
+traefik_data_directory: "{{ traefik_config_directory }}/data"
+traefik_data_owner: "{{ traefik_user }}"
+traefik_data_group: "{{ traefik_group }}"
+
+traefik_log_directory: /var/log/traefik
+traefik_log_owner: "{{ traefik_user }}"
+traefik_log_group: "{{ traefik_group }}"
+traefik_log_mode: 0640
+
+traefik_dynamic_directory: "{{ traefik_config_directory }}/dynamic"
+traefik_dynamic_owner: "{{ traefik_user }}"
+traefik_dynamic_group: "{{ traefik_group }}"
+
+traefik_certificates_directory: "{{ traefik_config_directory }}/certificates"
+traefik_certificates_owner: "{{ traefik_user }}"
+traefik_certificates_group: "{{ traefik_group }}"
+
+traefik_acme_email: traefik-acme@sean.fzymgc.house
+
+traefik_image: traefik:v3.5
+
+traefik_docker_network: main-bridge
+
+# Traefik specific settings
+traefik_api_dashboard: true
+traefik_api_insecure: true
+traefik_api_debug: false
+
+# Entry points
+traefik_entrypoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entrypoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: cloudflare
+
+# Providers
+# These are _inside_ the docker container
+traefik_providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    network: main-bridge
+  file:
+    directory: "/etc/traefik/dynamic"
+    watch: true
+
+# Certificate resolvers
+# These are _inside_ the docker container
+traefik_certresolvers:
+  cloudflare:
+    acme:
+      email: "{{ traefik_acme_email }}"
+      storage: "/etc/traefik/acme.json"
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - "172.20.255.254:53"

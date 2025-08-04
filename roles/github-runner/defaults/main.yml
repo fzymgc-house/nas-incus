@@ -19,7 +19,7 @@ github_runner_group: runner
 
 # Runner configuration
 github_runner_name: "{{ inventory_hostname }}"
-github_runner_labels: "self-hosted,Linux,X64,docker"
+github_runner_labels: "self-hosted,Linux,docker"
 
 # Organization or repository to register runner with
 # Override these in inventory or playbook
@@ -40,7 +40,8 @@ github_runner_allow_update: true
 github_runner_work_dir: "{{ github_runner_base_dir }}/workspace"
 
 # Additional packages to install (beyond cloud-init)
-github_runner_packages_to_install: []
+github_runner_packages_to_install:
+  - gh
 
 # Runner download URL
 github_runner_download_url: >-

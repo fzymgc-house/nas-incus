@@ -13,26 +13,6 @@ incus:
     ansible_become: false
     ansible_user: root
   hosts:
-    nas-app-proxy:
-      ansible_hostname: nas-app-proxy
-      ansible_host: "nas-app-proxy.{{ primary_domain }}"
-      ansible_fqdn: "nas-app-proxy.{{ primary_domain }}"
-      reboot_offset: 15m
-      install_time: 01:30
-      reboot_time: 02:00
-      network_eth0:
-        type: static
-        ipv4_address: 192.168.20.201/22
-        ipv6_address: 2600:4040:27d2:4802::201/64
-        gateway: "{{ primary_dns_server }}"
-        dns: "{{ primary_dns_server }}"
-        interface_name: eth0
-      network_eth1:
-        type: dhcp
-        interface_name: eth1
-        use_dhcp_routes: false
-        dns_address: "{{ ansible_eth1.ipv4.address }}"
-        dns_domain: incus
     nas-support:
       ansible_hostname: nas-support
       ansible_host: "nas-support.{{ primary_domain }}"
@@ -111,6 +91,11 @@ github_runners:
       ansible_hostname: gh-runner
       ansible_host: "gh-runner.{{ primary_domain }}"
       ansible_fqdn: "gh-runner.{{ primary_domain }}"
+      ansible_connection: ssh
+      ansible_become: true
+      ansible_user: fzymgc
+      ansible_python_interpreter: /usr/bin/python3
+      ansible_ssh_pipelining: true
       network_eth0:
         type: dhcp
         interface_name: eth0
@@ -119,8 +104,8 @@ github_runners:
       github_runner_name: gh-runner
       github_runner_registration_token: !vault |
           $ANSIBLE_VAULT;1.1;AES256
-          34313434366463326331633533633161656363393936316339396434336236633537353561623633
-          6334346366636364323566623933366334623736643262370a323161613362373661383835646263
-          34653661396664303833333834656361666636336162663066386531653930353933633831663465
-          3439376365343932340a383066656237623238366133326365376364323334623937646137373962
-          61636263326463613935623466363264626239633330636435313532306665303534
+          35323734373730386532666330643566653363323730386536303964323964666535373862396638
+          3465653434333864613732343839376432383530373030310a303934373238393061323963376439
+          34306562303863373432633233313639616664663665643338643735316466356333663435633262
+          6133636236643562610a653264616437646436653864653736303766653932633933653465323839
+          35363130636137396132326530613532623062646237323735323734363632653936

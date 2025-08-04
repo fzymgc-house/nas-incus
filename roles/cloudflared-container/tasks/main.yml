@@ -1,0 +1,44 @@
+---
+
+- name: Add packages
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    name: "{{ cloudflared_packages }}"
+    state: present
+
+- name: Add cloudflared group
+  ansible.builtin.group:
+    name: "{{ cloudflared_group }}"
+    gid: "{{ cloudflared_group_id }}"
+    system: yes
+    state: present
+
+- name: Add cloudflared user and group
+  ansible.builtin.user:
+    name: "{{ cloudflared_user }}"
+    uid: "{{ cloudflared_user_id }}"
+    group: "{{ cloudflared_group }}"
+    system: yes
+    shell: /usr/sbin/nologin
+    create_home: no
+    state: present
+
+- name: Create cloudflared config directory
+  ansible.builtin.file:
+    path: "{{ cloudflared_config_directory }}"
+    state: directory
+    mode: "{{ cloudflared_directory_mode }}"
+    owner: "{{ cloudflared_user }}"
+    group: "{{ cloudflared_group }}"
+
+- name: Configure cloudflared docker container
+  ansible.builtin.import_tasks: docker-container.yml
+  tags:
+    - docker-cloudflared
+
+- name: Add admin user to cloudflared group
+  ansible.builtin.user:
+    name: fzymgc
+    groups: "{{ cloudflared_group }}"
+    state: present
+    append: yes

@@ -1,0 +1,47 @@
+[Unit]
+Description=Cloudflared DNS Proxy (Docker Compose)
+Documentation=https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+WorkingDirectory={{ cloudflared_config_directory }}
+
+# Pull images before starting
+ExecStartPre=/usr/bin/docker compose pull --quiet
+
+# Start services
+ExecStart=/usr/bin/docker compose up -d --remove-orphans
+
+# Reload: Gracefully reload Cloudflared configuration
+ExecReload=/usr/bin/docker compose restart cloudflared
+
+# Stop services
+ExecStop=/usr/bin/docker compose stop
+
+# Cleanup
+ExecStopPost=/usr/bin/docker compose rm -v -f
+
+# Restart policy
+Restart=on-failure
+RestartSec=30s
+StartLimitInterval=200
+StartLimitBurst=3
+
+# Environment
+Environment="DOCKER_CLIENT_TIMEOUT=120"
+Environment="COMPOSE_HTTP_TIMEOUT=120"
+Environment="COMPOSE_PROJECT_NAME=cloudflared"
+
+# Security
+NoNewPrivileges=true
+LimitNOFILE=1048576
+LimitNPROC=512
+
+[Install]
+WantedBy=multi-user.target

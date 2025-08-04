@@ -102,8 +102,6 @@ module "service-name" {
   depends_on = [module.base]
   source     = "./modules/service-name"
 
-  # Pass required variables
-  container_bridge_network_name = module.base.container_bridge_network_name
 }
 
 # Variable definition with validation

@@ -78,6 +78,13 @@ services:
     image: ghcr.io/moghtech/komodo-core:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
+      traefik.enable: "true"
+      traefik.http.routers.komodo-core.rule: "Host(`komodo.fzymgc.house`)"
+      traefik.http.routers.komodo-core.entrypoints: "websecure"
+      traefik.http.routers.komodo-core.tls: "true"
+      traefik.http.routers.komodo-core.tls.certresolver: "cloudflare"
+      traefik.http.routers.komodo-core.tls.domains[0].main: "komodo.fzymgc.house"
+      traefik.http.routers.komodo-core.tls.domains[0].sans: "*.komodo.fzymgc.house"
     restart: unless-stopped
     deploy:
       resources:
@@ -88,7 +95,7 @@ services:
           cpus: '0.5'
           memory: 512M
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9120/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:9120"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -136,12 +143,6 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
-    healthcheck:
-      test: ["CMD", "pgrep", "-f", "komodo-periphery"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
     networks:
       - internal
     volumes:

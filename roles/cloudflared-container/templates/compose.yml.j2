@@ -1,0 +1,38 @@
+services:
+  cloudflared:
+    image: {{ cloudflared_image }}
+    pull_policy: always
+    container_name: cloudflared
+    restart: unless-stopped
+    command: >
+      proxy-dns
+      --address 0.0.0.0
+      --port 53
+      {% for server in cloudflared_proxy_dns_servers %}
+      --upstream {{ server }}
+      {% endfor %}
+      {% if cloudflared_metrics_enabled %}
+      --metrics {{ cloudflared_metrics }}
+      {% endif %}
+      --max-upstream-conns {{ cloudflared_proxy_dns_max_upstream_conns }}
+    networks:
+      {{ cloudflared_docker_network }}:
+        aliases:
+          - cloudflared
+          - cloudflared.{{ cloudflared_docker_network }}
+      internal-bridge:
+        ipv4_address: 172.20.255.254
+        aliases:
+          - cloudflared
+          - cloudflared.internal-bridge
+    cap_add:
+      - NET_ADMIN
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  {{ cloudflared_docker_network }}:
+    external: true
+  internal-bridge:
+    external: true

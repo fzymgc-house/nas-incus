@@ -1,0 +1,38 @@
+services:
+  traefik:
+    image: {{ traefik_image }}
+    pull_policy: always
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Traefik dashboard
+    volumes:
+      - {{ traefik_config_directory }}:/etc/traefik
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - {{ traefik_log_directory }}:/var/log/traefik
+      - {{ traefik_data_directory }}:/data
+      - {{ traefik_certificates_directory }}:/etc/traefik/certificates
+    networks:
+      {{ traefik_docker_network }}:
+        aliases:
+          - traefik
+          - traefik.{{ traefik_docker_network }}
+      internal-bridge:
+        aliases:
+          - traefik
+          - traefik.internal-bridge
+    environment:
+      - CF_DNS_API_TOKEN={{ cloudflare_api_token }}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.{{ ansible_domain | default('fzymgc.house') }}`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+networks:
+  {{ traefik_docker_network }}:
+    external: true
+  internal-bridge:
+    external: true

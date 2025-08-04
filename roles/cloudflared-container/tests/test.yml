@@ -1,0 +1,6 @@
+---
+- name: Test Cloudflared Container Role
+  hosts: test
+  become: yes
+  roles:
+    - cloudflared-container

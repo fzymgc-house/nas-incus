@@ -1,0 +1,65 @@
+---
+- name: Ensure main-bridge network exists
+  community.docker.docker_network:
+    name: main-bridge
+    state: present
+    driver: bridge
+    driver_options:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.bridge.host_binding_ipv4: "{{ ansible_eth0.ipv4.address }}"
+      com.docker.network.bridge.name: "main-bridge"
+      com.docker.network.driver.mtu: "1500"
+  notify: Restart traefik
+
+- name: Ensure internal-bridge network exists
+  community.docker.docker_network:
+    name: internal-bridge
+    state: present
+    driver: bridge
+    internal: true
+    driver_options:
+      com.docker.network.bridge.enable_ip_masquerade: "false"
+      com.docker.network.bridge.name: "internal-bridge"
+  notify: Restart traefik
+
+- name: Create Traefik Docker Compose File
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ traefik_config_directory }}/compose.yml"
+    owner: "{{ traefik_user }}"
+    group: "{{ traefik_group }}"
+    mode: "{{ traefik_config_mode }}"
+  notify: Restart traefik
+
+- name: Create dockerignore file for Traefik
+  ansible.builtin.copy:
+    dest: "{{ traefik_config_directory }}/.dockerignore"
+    content: |
+      dynamic/
+      certificates/
+      compose.yml
+      traefik.yml
+    owner: "{{ traefik_user }}"
+    group: "{{ traefik_group }}"
+    mode: "{{ traefik_config_mode }}"
+
+- name: Create systemctl service for Traefik Docker Compose
+  ansible.builtin.template:
+    src: traefik-systemd.unit.j2
+    dest: "/etc/systemd/system/traefik.service"
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload systemd
+    - Restart traefik
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Enable and start Traefik Docker service
+  ansible.builtin.systemd:
+    name: traefik
+    enabled: yes
+    state: started

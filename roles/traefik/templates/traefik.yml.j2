@@ -1,0 +1,68 @@
+# Traefik Configuration
+api:
+  dashboard: {{ traefik_api_dashboard | lower }}
+  insecure: {{ traefik_api_insecure | lower }}
+  debug: {{ traefik_api_debug | lower }}
+
+# Entry points
+entryPoints:
+{% for name, config in traefik_entrypoints.items() %}
+  {{ name }}:
+    address: "{{ config.address }}"
+{% if config.http is defined %}
+    http:
+{% if config.http.redirections is defined %}
+      redirections:
+{% for redirection in config.http.redirections %}
+        {{ redirection }}:
+{% for key, value in config.http.redirections[redirection].items() %}
+          {{ key }}: {{ value }}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% if config.http.tls is defined %}
+      tls:
+{% for key, value in config.http.tls.items() %}
+        {{ key }}: {{ value }}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% endfor %}
+
+# Providers
+providers:
+{% for name, config in traefik_providers.items() %}
+  {{ name }}:
+{% for key, value in config.items() %}
+    {{ key }}: {{ value }}
+{% endfor %}
+{% endfor %}
+
+# Certificate resolvers
+certificatesResolvers:
+{% for name, config in traefik_certresolvers.items() %}
+  {{ name }}:
+    acme:
+      email: "{{ config.acme.email }}"
+      storage: "{{ config.acme.storage }}"
+      # caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      dnsChallenge:
+        provider: "{{ config.acme.dnsChallenge.provider }}"
+        propagation:
+          disableANSChecks: true
+          delayBeforeChecks: 30
+        resolvers:
+{% for resolver in config.acme.dnsChallenge.resolvers %}
+          - "{{ resolver }}"
+{% endfor %}
+{% endfor %}
+
+# Logging
+log:
+  level: DEBUG
+  # filePath: "/var/log/traefik/traefik.log"
+
+# Access logs
+accessLog:
+  filePath: "/var/log/traefik/access.log"
+  format: json

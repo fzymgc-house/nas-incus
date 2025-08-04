@@ -1,0 +1,13 @@
+---
+# Default variables for cloudflared-container role
+# These can be overridden in group_vars, host_vars, or playbook vars
+
+# Cloudflared configuration defaults
+cloudflared_proxy_dns_servers:
+  - "https://1.1.1.1/dns-query"
+  - "https://1.0.0.1/dns-query"
+
+cloudflared_metrics_enabled: true
+cloudflared_metrics: "0.0.0.0:49312"
+
+cloudflared_proxy_dns_max_upstream_conns: 5

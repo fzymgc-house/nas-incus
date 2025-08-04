@@ -1,0 +1,58 @@
+---
+
+- name: Add packages
+  ansible.builtin.apt:
+    cache_valid_time: 3600
+    name: "{{ traefik_packages }}"
+    state: present
+
+- name: Add traefik user and group
+  ansible.builtin.user:
+    name: "{{ traefik_user }}"
+    system: yes
+    shell: /usr/sbin/nologin
+    create_home: no
+    state: present
+
+- name: Set facts for API tokens
+  ansible.builtin.set_fact:
+    cloudflare_api_token: "{{ lookup('community.general.onepassword', 'cloudflare-api-token', field='password', vault='fzymgc-house') }}"
+    zerossl_key_id: "{{ lookup('community.general.onepassword', 'zerossl-eab-creds', field='username', vault='fzymgc-house') }}"
+    zerossl_mac_key: "{{ lookup('community.general.onepassword', 'zerossl-eab-creds', field='password', vault='fzymgc-house') }}"
+
+- name: Create all traefik directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "{{ traefik_directory_mode }}"
+    owner: "{{ traefik_user }}"
+    group: "{{ traefik_group }}"
+  loop:
+    - "{{ traefik_config_directory }}"
+    - "{{ traefik_dynamic_directory }}"
+    - "{{ traefik_certificates_directory }}"
+    - "{{ traefik_log_directory }}"
+    - "{{ traefik_data_directory }}"
+
+- name: Configure traefik
+  ansible.builtin.template:
+    src: traefik.yml.j2
+    dest: "{{ traefik_config_directory }}/{{ traefik_config_file }}"
+    mode: "{{ traefik_config_mode }}"
+    owner: "{{ traefik_user }}"
+    group: "{{ traefik_group }}"
+    backup: yes
+  notify: Restart traefik
+
+
+- name: Configure traefik docker container
+  ansible.builtin.import_tasks: docker-container.yml
+  tags:
+    - docker-traefik
+
+- name: Add admin user to traefik group
+  ansible.builtin.user:
+    name: fzymgc
+    groups: "{{ traefik_group }}"
+    state: present
+    append: yes

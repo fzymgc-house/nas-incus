@@ -11,3 +11,8 @@ host_data_base_dir: /mnt/data
 host_data_dir_owner: apps
 host_data_dir_group: apps
 host_data_dir_mode: "0755"
+
+caddy_sites_directory: /etc/caddy/sites
+caddy_sites_owner: caddy
+caddy_sites_group: caddy
+caddy_sites_mode: "0640"

@@ -56,11 +56,6 @@
   roles:
     - role: common
 
-- name: Run nas-app-proxy playbook
-  ansible.builtin.import_playbook: nas-app-proxy-playbook.yml
-  tags:
-    - nas-app-proxy
-
 - name: Run nas-support playbook
   ansible.builtin.import_playbook: nas-support-playbook.yml
   tags:

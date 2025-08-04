@@ -1,0 +1,27 @@
+cloudflared_packages:
+  - curl
+  - debian-keyring
+  - debian-archive-keyring
+  - apt-transport-https
+  - ca-certificates
+
+cloudflared_user: cloudflared
+cloudflared_user_id: 65531
+cloudflared_group: cloudflared
+cloudflared_group_id: 65531
+
+cloudflared_config_directory: /etc/cloudflared
+cloudflared_config_mode: 0640
+cloudflared_directory_mode: 0750
+
+cloudflared_image: cloudflare/cloudflared:latest
+cloudflared_docker_network: main-bridge
+
+cloudflared_proxy_dns_servers:
+  - "https://1.1.1.1/dns-query"
+  - "https://1.0.0.1/dns-query"
+
+cloudflared_metrics_enabled: true
+cloudflared_metrics: "0.0.0.0:49312"
+
+cloudflared_proxy_dns_max_upstream_conns: 5
