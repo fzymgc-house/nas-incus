@@ -44,6 +44,16 @@
     backup: yes
   notify: Restart traefik
 
+- name: Copy traefik dynamic config
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ traefik_dynamic_directory }}/{{ item }}"
+    mode: "{{ traefik_config_mode }}"
+    owner: "{{ traefik_user }}"
+    group: "{{ traefik_group }}"
+    backup: yes
+  loop:
+    - authentik-middlware.yml
 
 - name: Configure traefik docker container
   ansible.builtin.import_tasks: docker-container.yml

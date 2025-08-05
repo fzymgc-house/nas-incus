@@ -259,7 +259,7 @@ monitoring_interval = "15-sec"
 ## Env: KOMODO_RESOURCE_POLL_INTERVAL
 ## Options: https://docs.rs/komodo_client/latest/komodo_client/entities/enum.Timelength.html
 ## Default: 1-hr
-resource_poll_interval = "1-hr"
+resource_poll_interval = "1-min"
 
 ############
 # Security #
@@ -497,3 +497,4 @@ KARAKEEP_OIDC_CLIENT_ID = "{{ lookup('community.general.onepassword', 'karakeep-
 KARAKEEP_OIDC_CLIENT_SECRET = "{{ lookup('community.general.onepassword', 'karakeep-secrets', field='oidc_client_secret', vault='fzymgc-house') }}"
 KARAKEEP_OPENAI_KEY = "{{ lookup('community.general.onepassword', 'karakeep-secrets', field='openai_api_key', vault='fzymgc-house') }}"
 PERPLEXITY_API_KEY = "{{ lookup('community.general.onepassword', 'karakeep-secrets', field='perplexity_api_key', vault='fzymgc-house') }}"
+NAS_CONTAINER_APPS_AUTH_OUTPOST_TOKEN = "{{ lookup('community.general.onepassword', 'komodo-secrets', field='nas_container_apps_auth_outpost_token', vault='fzymgc-house') }}"

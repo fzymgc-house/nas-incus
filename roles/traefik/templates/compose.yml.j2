@@ -10,10 +10,12 @@ services:
       - "8080:8080"  # Traefik dashboard
     volumes:
       - {{ traefik_config_directory }}:/etc/traefik
+      - {{ traefik_dynamic_directory }}:/etc/traefik/dynamic
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - {{ traefik_log_directory }}:/var/log/traefik
       - {{ traefik_data_directory }}:/data
       - {{ traefik_certificates_directory }}:/etc/traefik/certificates
+      - /etc/ssl/certs:/etc/ssl/certs
     networks:
       {{ traefik_docker_network }}:
         aliases:
