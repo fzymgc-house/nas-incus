@@ -5,7 +5,7 @@
     - name: Provision incus instances
       community.general.terraform:
         project_path: "{{ playbook_dir }}/tf"
-        workspace: "incus-nas"
+        workspace: incus-nas
         state: present
       tags:
         - incus
@@ -42,7 +42,7 @@
       ansible.builtin.hostname:
         name: "{{ ansible_fqdn }}"
     - name: Reboot
-      ansible.builtin.reboot:
+      ansible.builtin.reboot: {}
       when: upgrade.changed
 
 - hosts: incus
@@ -70,8 +70,3 @@
   ansible.builtin.import_playbook: ares-servers-playbook.yml
   tags:
     - ares-servers
-
-- name: Run github-runners playbook
-  ansible.builtin.import_playbook: github-runners-playbook.yml
-  tags:
-    - github-runners

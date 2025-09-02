@@ -1,0 +1,19 @@
+---
+- name: Ensure users are configured
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+    groups: "{{ item.groups | default(omit) }}"
+    append: "{{ item.append | default(true) }}"
+    comment: "{{ item.comment | default(omit) }}"
+    shell: "{{ item.shell | default(omit) }}"
+    home: "{{ item.home | default(omit) }}"
+    create_home: "{{ item.create_home | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    system: "{{ item.system | default(omit) }}"
+    password: "{{ item.password | default(omit) }}"
+    remove: "{{ item.remove | default(omit) }}"
+  loop: "{{ nas_container_users }}"
+  loop_control:
+    label: "{{ item.name }}"

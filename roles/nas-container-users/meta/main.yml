@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  author: fzymgc-house
+  description: Manage users and groups for nas-container-apps host with explicit UIDs/GIDs
+  license: MIT
+  min_ansible_version: 2.12
+  platforms:
+    - name: Debian
+      versions: [bullseye, bookworm]
+    - name: Ubuntu
+      versions: [focal, jammy, noble]
+dependencies: []

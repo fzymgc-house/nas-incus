@@ -13,6 +13,7 @@ services:
     # Recommended: Pin to a specific version
     # https://github.com/FerretDB/documentdb/pkgs/container/postgres-documentdb
     image: ghcr.io/ferretdb/postgres-documentdb:17-0.105.0-ferretdb-2.4.0
+    user: '568:568'
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     restart: unless-stopped
@@ -46,6 +47,7 @@ services:
     # Recommended: Pin to a specific version
     # https://github.com/FerretDB/FerretDB/pkgs/container/ferretdb
     image: ghcr.io/ferretdb/ferretdb:2.4.0
+    user: '568:568'
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     restart: unless-stopped

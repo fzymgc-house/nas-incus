@@ -68,6 +68,7 @@ rules:
     required: only-when-needed
     allow-quoted-quotes: true
 
+
 # Ignore paths
 ignore: |
   .cache/

@@ -1,0 +1,8 @@
+---
+- name: Manage nas-container-apps groups
+  ansible.builtin.include_tasks: groups.yml
+  when: (nas_container_groups | default([])) | length > 0
+
+- name: Manage nas-container-apps users
+  ansible.builtin.include_tasks: users.yml
+  when: (nas_container_users | default([])) | length > 0

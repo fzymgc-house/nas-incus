@@ -33,9 +33,19 @@ import {
   id = "default"
 }
 
+import {
+  to = module.nas-support.incus_instance.nas-support
+  id = "nas-support"
+}
+
 module "nas-support" {
   depends_on = [module.profiles]
   source     = "./modules/nas-support"
+}
+
+import {
+  to = module.nas-container-apps.incus_instance.nas-container-apps
+  id = "nas-container-apps"
 }
 
 module "nas-container-apps" {
@@ -43,6 +53,10 @@ module "nas-container-apps" {
   source     = "./modules/nas-container-apps"
 }
 
+import {
+  to = module.doorsportal1-server.incus_instance.ares-server
+  id = "doorsportal1"
+}
 module "doorsportal1-server" {
   depends_on          = [module.profiles]
   source              = "./modules/ares-server"
@@ -54,6 +68,11 @@ module "doorsportal1-server" {
   server_database_dir = "/mnt/main/fzymgc-house/incus/storage/doorsportal1/database"
 }
 
+import {
+  to = module.precipice-server.incus_instance.ares-server
+  id = "precipice"
+}
+
 module "precipice-server" {
   depends_on          = [module.profiles]
   source              = "./modules/ares-server"
@@ -63,11 +82,4 @@ module "precipice-server" {
   server_image        = "ubuntu/oracular/cloud"
   server_source_dir   = "/mnt/main/fzymgc-house/incus/storage/precipice/server"
   server_database_dir = "/mnt/main/fzymgc-house/incus/storage/precipice/database"
-}
-
-module "github-runners" {
-  depends_on   = [module.profiles]
-  source       = "./modules/github-runner"
-  runner_count = 1
-  runner_name  = "gh-runner"
 }

@@ -1,0 +1,6 @@
+---
+# Default groups to manage on nas-container-apps hosts
+nas_container_groups: []
+
+# Default users to manage on nas-container-apps hosts
+nas_container_users: []

@@ -13,7 +13,12 @@ resource "incus_instance" "nas-container-apps" {
     "user.access_interface" = "eth0"
     "raw.idmap"             = <<-EOT
       uid 568 568
+      uid 3000 3000
+      uid 3500 3500
       gid 568 568
+      gid 4000 4000
+      gid 3000 3000
+      gid 3500 3500
     EOT
   }
 
@@ -50,6 +55,17 @@ resource "incus_instance" "nas-container-apps" {
     properties = {
       source = "/mnt/main/fzymgc-house/incus/storage/container-apps/stacks"
       path   = "/mnt/stacks"
+    }
+  }
+
+  device {
+    name = "paperless-data"
+    type = "disk"
+    properties = {
+      source      = "/mnt/main/paperless-docs"
+      path        = "/mnt/paperless-data"
+      propagation = "rshared"
+      recursive   = true
     }
   }
 

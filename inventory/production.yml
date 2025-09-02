@@ -49,6 +49,23 @@ incus:
         use_dhcp_routes: false
         dns_address: "{{ ansible_eth1.ipv4.address }}"
         dns_domain: incus
+      nas_container_groups:
+        - name: apps
+          gid: 568
+        - name: paperless
+          gid: 3500
+      nas_container_users:
+        - name: apps
+          uid: 568
+          group: apps
+          groups: [users]
+          shell: /bin/bash
+        - name: paperless
+          uid: 3500
+          group: paperless
+          groups: [users]
+          shell: /bin/bash
+
     doorsportal1:
       ansible_hostname: doorsportal1
       ansible_host: "doorsportal1.{{ primary_domain }}"

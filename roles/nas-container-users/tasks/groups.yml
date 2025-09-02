@@ -1,0 +1,10 @@
+---
+- name: Ensure groups are configured
+  ansible.builtin.group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid | default(omit) }}"
+    state: "{{ item.state | default('present') }}"
+    system: "{{ item.system | default(omit) }}"
+  loop: "{{ nas_container_groups }}"
+  loop_control:
+    label: "{{ item.name }}"

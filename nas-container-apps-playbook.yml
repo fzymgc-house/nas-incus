@@ -1,11 +1,12 @@
-
+---
 - hosts: nas-container-apps
   become: true
   tags:
     - nas-container-apps
   pre_tasks:
-  - ansible.builtin.setup:
-    tags: always
+    - ansible.builtin.setup: {}
+      tags:
+        - always
   roles:
     - role: geerlingguy.docker
       vars:
@@ -13,38 +14,26 @@
         docker_install_compose_plugin: true
         docker_compose_package: docker-compose-plugin
         docker_compose_package_state: present
-      tags: docker
+      tags:
+        - docker
+    - role: nas-container-users
+      tags:
+        - users
     - role: cloudflared-container
-      tags: cloudflared-container
+      tags:
+        - cloudflared-container
       vars:
         cloudflared_docker_network: main-bridge
         cloudflared_config_directory: /mnt/data/nas-container-apps/cloudflared
         cloudflared_proxy_dns_address: 172.20.255.254
         cloudflared_proxy_dns_port: 53
-    # - role: dnscrypt-proxy-container
-    #   tags: dnscrypt-proxy-container
-    #   vars:
-    #     dnscrypt_proxy_docker_network: main-bridge
-    #     dnscrypt_proxy_config_directory: /mnt/data/nas-container-apps/dnscrypt-proxy
-    #     dnscrypt_proxy_cache: false
-    #     dnscrypt_proxy_ipv4_servers: false
-    #     dnscrypt_proxy_ipv6_servers: false
-    #     dnscrypt_proxy_dnscrypt_servers: false
-    #     dnscrypt_proxy_doh_servers: true
-    #     dnscrypt_proxy_odoh_servers: true
-    #     dnscrypt_proxy_require_dnssec: true
-    #     dnscrypt_proxy_require_nolog: false
-    #     dnscrypt_proxy_require_nofilter: false
-    #     dnscrypt_proxy_log_level: 0
-    #     dnscrypt_proxy_query_log_enabled: true
-    #     dnscrypt_proxy_query_log_file: "/data/query.log"
-    #     dnscrypt_proxy_query_log_format: "ltsv"
-    #     dnscrypt_proxy_query_log_ignored_qtypes: ["DNSKEY", "NS"]
     - role: traefik
-      tags: traefik
+      tags:
+        - traefik
       vars:
         traefik_docker_network: main-bridge
         traefik_log_directory: /mnt/data/nas-container-apps/traefik/log
         traefik_config_directory: /mnt/data/nas-container-apps/traefik
     - role: capps-komodo
-      tags: komodo
+      tags:
+        - komodo
