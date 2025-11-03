@@ -54,6 +54,7 @@
     backup: yes
   loop:
     - authentik-middlware.yml
+    - noverify-serverstransport.yml
 
 - name: Configure traefik docker container
   ansible.builtin.import_tasks: docker-container.yml

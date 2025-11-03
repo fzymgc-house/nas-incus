@@ -1,4 +1,4 @@
-#SPDX-License-Identifier: MIT-0
+# SPDX-License-Identifier: MIT-0
 ---
 # vars file for capps-komodo
 
@@ -16,3 +16,5 @@ caddy_sites_directory: /etc/caddy/sites
 caddy_sites_owner: caddy
 caddy_sites_group: caddy
 caddy_sites_mode: "0640"
+
+komodo_image_tag: 1.19.2

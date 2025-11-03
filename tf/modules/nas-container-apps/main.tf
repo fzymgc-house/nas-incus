@@ -15,10 +15,12 @@ resource "incus_instance" "nas-container-apps" {
       uid 568 568
       uid 3000 3000
       uid 3500 3500
+      uid 3501 3501
       gid 568 568
       gid 4000 4000
       gid 3000 3000
       gid 3500 3500
+      gid 3501 3501
     EOT
   }
 
@@ -66,6 +68,16 @@ resource "incus_instance" "nas-container-apps" {
       path        = "/mnt/paperless-data"
       propagation = "rshared"
       recursive   = true
+    }
+  }
+
+  // add data for immich
+  device {
+    name = "immich-data"
+    type = "disk"
+    properties = {
+      source = "/mnt/main/immich"
+      path   = "/mnt/immich-data"
     }
   }
 

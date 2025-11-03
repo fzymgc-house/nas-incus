@@ -1,3 +1,4 @@
+---
 - name: Add caddy repos
   block:
     - name: Add cloudsmith gpg key for caddy
@@ -48,17 +49,68 @@
     name: caddy
     state: present
 
-- name: Install xcaddy and deps
+- name: Install xcaddy
   ansible.builtin.apt:
-    name: "{{ item }}"
+    name: xcaddy
     state: present
-  loop:
-    - xcaddy
-    - golang
+
+- name: Install Go from official source
+  block:
+    - name: Check if Go is already installed
+      ansible.builtin.stat:
+        path: /usr/local/go/bin/go
+      register: go_binary
+
+    - name: Get latest stable Go version
+      ansible.builtin.uri:
+        url: https://go.dev/VERSION?m=text
+        return_content: true
+      register: go_version_response
+      when: not go_binary.stat.exists
+
+    - name: Set Go version fact
+      ansible.builtin.set_fact:
+        go_version: "{{ go_version_response.content.split('\n')[0] | regex_replace('^go', '') }}"
+      when: not go_binary.stat.exists
+
+    - name: Download Go tarball
+      ansible.builtin.get_url:
+        url: https://go.dev/dl/go{{ go_version }}.linux-amd64.tar.gz
+        dest: /tmp/go{{ go_version }}.linux-amd64.tar.gz
+        mode: '0644'
+      when: not go_binary.stat.exists
+
+    - name: Remove old Go installation
+      ansible.builtin.file:
+        path: /usr/local/go
+        state: absent
+      when: not go_binary.stat.exists
+
+    - name: Extract Go tarball
+      ansible.builtin.unarchive:
+        src: /tmp/go{{ go_version }}.linux-amd64.tar.gz
+        dest: /usr/local
+        remote_src: true
+      when: not go_binary.stat.exists
+
+    - name: Add Go to PATH in /etc/profile.d
+      ansible.builtin.copy:
+        content: |
+          export PATH=$PATH:/usr/local/go/bin
+        dest: /etc/profile.d/go.sh
+        mode: '0644'
+
+    - name: Create symlink for go binary
+      ansible.builtin.file:
+        src: /usr/local/go/bin/go
+        dest: /usr/bin/go
+        state: link
+        force: true
 
 - name: Build custom caddy binary
   ansible.builtin.shell:
     cmd: |
+      export PATH=$PATH:/usr/local/go/bin
       xcaddy build --with github.com/caddy-dns/cloudflare
       mv caddy /usr/bin/caddy.custom
       cp /usr/bin/caddy /usr/bin/caddy.default
@@ -66,6 +118,8 @@
       update-alternatives --install /usr/bin/caddy caddy /usr/bin/caddy.default 10
       update-alternatives --install /usr/bin/caddy caddy /usr/bin/caddy.custom 50
     creates: /usr/bin/caddy.custom
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/local/go/bin"
 
 - name: Configure caddy
   ansible.builtin.template:

@@ -54,6 +54,8 @@ incus:
           gid: 568
         - name: paperless
           gid: 3500
+        - name: immich
+          gid: 3501
       nas_container_users:
         - name: apps
           uid: 568
@@ -65,7 +67,11 @@ incus:
           group: paperless
           groups: [users]
           shell: /bin/bash
-
+        - name: immich
+          uid: 3501
+          group: immich
+          groups: [users]
+          shell: /bin/bash
     doorsportal1:
       ansible_hostname: doorsportal1
       ansible_host: "doorsportal1.{{ primary_domain }}"

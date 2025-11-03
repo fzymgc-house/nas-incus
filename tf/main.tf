@@ -63,7 +63,7 @@ module "doorsportal1-server" {
   hwaddr              = "00:16:3e:ae:0c:f2"
   server_name         = "doorsportal1"
   server_description  = "Doors Portal 1"
-  server_image        = "ubuntu/oracular/cloud"
+  server_image        = "ubuntu/noble/cloud"
   server_source_dir   = "/mnt/main/fzymgc-house/incus/storage/doorsportal1/server"
   server_database_dir = "/mnt/main/fzymgc-house/incus/storage/doorsportal1/database"
 }
@@ -79,7 +79,7 @@ module "precipice-server" {
   hwaddr              = "00:16:3e:ae:0c:f1"
   server_name         = "precipice"
   server_description  = "Precipice"
-  server_image        = "ubuntu/oracular/cloud"
+  server_image        = "ubuntu/noble/cloud"
   server_source_dir   = "/mnt/main/fzymgc-house/incus/storage/precipice/server"
   server_database_dir = "/mnt/main/fzymgc-house/incus/storage/precipice/database"
 }

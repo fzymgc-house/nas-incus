@@ -91,6 +91,14 @@
     mode: "0640"
   notify: Restart komodo core container
 
+- name: Install age key for sops decryption
+  ansible.builtin.copy:
+    content: "{{ lookup('community.general.onepassword', 'age-key-fzymgc-house-sops', field='password', vault='fzymgc-house') }}"
+    dest: "{{host_data_base_dir}}/komodo/age.key"
+    owner: apps
+    group: apps
+    mode: "0600"
+
 - name: Template compose file to compose dir
   ansible.builtin.template:
     src: compose.yaml.j2

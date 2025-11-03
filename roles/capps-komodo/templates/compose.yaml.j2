@@ -77,7 +77,11 @@ services:
           - ferretdb
           - mongo
   core:
-    image: ghcr.io/moghtech/komodo-core:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
+    build:
+      dockerfile_inline: |
+        FROM ghcr.io/getsops/sops:v3.10.2-alpine AS sops
+        FROM ghcr.io/moghtech/komodo-core:{{komodo_image_tag}}
+        COPY --from=sops /usr/local/bin/sops /usr/local/bin/sops
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
       traefik.enable: "true"
@@ -88,6 +92,8 @@ services:
       traefik.http.routers.komodo-core.tls.domains[0].main: "komodo.fzymgc.house"
       traefik.http.routers.komodo-core.tls.domains[0].sans: "*.komodo.fzymgc.house"
     restart: unless-stopped
+    environment:
+      SOPS_AGE_KEY_FILE: /config/age.key
     deploy:
       resources:
         limits:
@@ -121,7 +127,9 @@ services:
       ## Store sync files on server
       - /mnt/data/komodo/data/syncs:/syncs
       ## Optionally mount a custom core.config.toml
-      - /mnt/data/komodo/config.toml:/config/config.toml
+      - /mnt/data/komodo/config.toml:/config/config.toml:ro
+      ## Mount age key for sops decryption
+      - /mnt/data/komodo/age.key:/config/age.key:ro
       ## Mount CA certificates for Komodo to use
       - /etc/ssl/certs:/etc/ssl/certs:ro
     ## Allows for systemd Periphery connection at
@@ -133,10 +141,16 @@ services:
   ## or deploy the Periphery binary with systemd using
   ## https://github.com/moghtech/komodo/tree/main/scripts
   periphery:
-    image: ghcr.io/moghtech/komodo-periphery:${COMPOSE_KOMODO_IMAGE_TAG:-latest}
+    build:
+      dockerfile_inline: |
+        FROM ghcr.io/getsops/sops:v3.10.2-alpine AS sops
+        FROM ghcr.io/moghtech/komodo-periphery:{{komodo_image_tag}}
+        COPY --from=sops /usr/local/bin/sops /usr/local/bin/sops
     labels:
       komodo.skip: # Prevent Komodo from stopping with StopAllContainers
     restart: unless-stopped
+    environment:
+      SOPS_AGE_KEY_FILE: /config/age.key
     deploy:
       resources:
         limits:
@@ -155,6 +169,8 @@ services:
       ## Mitigation: The periphery container runs with limited resources and the komodo.skip
       ## label prevents it from being stopped by Komodo's StopAllContainers command.
       - /var/run/docker.sock:/var/run/docker.sock
+      ## Mount age key for sops decryption
+      - /mnt/data/komodo/age.key:/config/age.key:ro
       ## Allow Periphery to see processes outside of container
       - /proc:/proc
       ## Specify the Periphery agent root directory.

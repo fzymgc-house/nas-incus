@@ -29,7 +29,7 @@ services:
       - CF_DNS_API_TOKEN={{ cloudflare_api_token }}
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.{{ ansible_domain | default('fzymgc.house') }}`)"
+      - "traefik.http.routers.traefik.rule=Host(`nas-traefik.{{ ansible_domain | default('fzymgc.house') }}`)"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
       - "traefik.http.services.traefik.loadbalancer.server.port=8080"
