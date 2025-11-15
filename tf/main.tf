@@ -19,9 +19,13 @@ import {
   id = "default"
 }
 
+import {
+  to = module.base.incus_storage_pool.apps
+  id = "apps"
+}
+
 module "profiles" {
-  source                        = "./modules/profiles"
-  container_bridge_network_name = module.base.container_bridge_network_name
+  source = "./modules/profiles"
 }
 
 import {
@@ -29,49 +33,41 @@ import {
   id = "default"
 }
 
-
-module "nas-app-proxy" {
-  depends_on                    = [module.profiles]
-  source                        = "./modules/nas-app-proxy"
-  container_bridge_network_name = module.base.container_bridge_network_name
-}
-
-
-module "nas-support" {
+module "nas_support" {
   depends_on                    = [module.profiles]
   source                        = "./modules/nas-support"
   container_bridge_network_name = module.base.container_bridge_network_name
 }
 
-module "nas-container-apps" {
+module "nas_container_apps" {
   depends_on                    = [module.profiles]
   source                        = "./modules/nas-container-apps"
   container_bridge_network_name = module.base.container_bridge_network_name
 }
 
-module "doorsportal1-server" {
+module "doorsportal1_server" {
   depends_on          = [module.profiles]
   source              = "./modules/ares-server"
   hwaddr              = "00:16:3e:ae:0c:f2"
   server_name         = "doorsportal1"
   server_description  = "Doors Portal 1"
-  server_image        = "ubuntu/oracular/cloud"
+  server_image        = module.base.container_ubuntu_2504_image_name
   server_source_dir   = "/mnt/main/fzymgc-house/incus/storage/doorsportal1/server"
   server_database_dir = "/mnt/main/fzymgc-house/incus/storage/doorsportal1/database"
 }
 
-module "precipice-server" {
+module "precipice_server" {
   depends_on          = [module.profiles]
   source              = "./modules/ares-server"
   hwaddr              = "00:16:3e:ae:0c:f1"
   server_name         = "precipice"
   server_description  = "Precipice"
-  server_image        = "ubuntu/oracular/cloud"
+  server_image        = module.base.container_ubuntu_2504_image_name
   server_source_dir   = "/mnt/main/fzymgc-house/incus/storage/precipice/server"
   server_database_dir = "/mnt/main/fzymgc-house/incus/storage/precipice/database"
 }
 
-module "github-runners" {
+module "github_runners" {
   depends_on   = [module.profiles]
   source       = "./modules/github-runner"
   runner_count = 1

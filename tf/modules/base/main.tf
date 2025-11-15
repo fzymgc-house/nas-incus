@@ -27,6 +27,16 @@ resource "incus_storage_pool" "default" {
   }
 }
 
+resource "incus_storage_pool" "apps" {
+  name        = "apps"
+  description = "Apps Incus storage pool"
+  driver      = "zfs"
+  config = {
+    source          = "apps/incus-pool"
+    "zfs.pool_name" = "apps/incus-pool"
+  }
+}
+
 resource "incus_network" "incusbr0" {
   name = "incusbr0"
   type = "bridge"
@@ -51,10 +61,26 @@ resource "incus_network" "cbr0" {
   }
 }
 
-resource "incus_image" "ubuntu_oracular_cloud" {
+resource "incus_image" "ubuntu_2404_cloud" {
   source_image = {
     remote       = "images"
-    name         = "ubuntu/oracular/cloud"
+    name         = "ubuntu/24.04/cloud"
+    copy_aliases = true
+  }
+}
+
+resource "incus_image" "ubuntu_2504_cloud" {
+  source_image = {
+    remote       = "images"
+    name         = "ubuntu/25.04/cloud"
+    copy_aliases = true
+  }
+}
+
+resource "incus_image" "ubuntu_2510_cloud" {
+  source_image = {
+    remote       = "images"
+    name         = "ubuntu/25.10/cloud"
     copy_aliases = true
   }
 }
@@ -62,10 +88,12 @@ resource "incus_image" "ubuntu_oracular_cloud" {
 resource "incus_profile" "default" {
   name        = "default"
   description = "Default TrueNAS profile"
+  project     = incus_project.default.name
   device {
     name = "eth0"
     type = "nic"
     properties = {
+      name    = "eth0"
       network = incus_network.incusbr0.name
     }
   }

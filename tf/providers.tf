@@ -4,17 +4,12 @@ provider "incus" {
 
   remote {
     name    = "nas"
-    scheme  = "https"
-    address = "192.168.20.200"
-    port    = "2443"
+    address = "https://192.168.20.200:2443"
     token   = var.incus_token
-    default = true
   }
 }
 
-provider "onepassword" {
-
-}
+provider "onepassword" {}
 
 terraform {
   cloud {

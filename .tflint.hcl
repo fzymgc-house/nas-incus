@@ -104,22 +104,8 @@ rule "terraform_workspace_remote" {
   enabled = true
 }
 
-# Incus provider specific rules (custom)
-rule "incus_instance_naming" {
-  enabled = true
-}
-
-rule "incus_network_naming" {
-  enabled = true
-}
-
 # Performance rules
 rule "terraform_typed_variables" {
-  enabled = true
-}
-
-# Security rules
-rule "terraform_sensitive_variable_no_default" {
   enabled = true
 }
 
@@ -133,6 +119,7 @@ config {
   # Disabled checks for generated files
   disabled_by_default = false
 
-  # Variable validation
-  varfile = ["terraform.tfvars", "*.auto.tfvars"]
+  # Variable validation - only load if files exist
+  # Removed varfile specification to allow tflint to work with modules
+  # that don't have their own tfvars files
 }
