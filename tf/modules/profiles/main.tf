@@ -7,6 +7,7 @@ resource "incus_profile" "default" {
     type = "nic"
     properties = {
       network = "incusbr0"
+      name    = "eth0"
     }
   }
   device {

@@ -1,12 +1,8 @@
 
-data "incus_project" "default" {
-  name = "default"
-}
-
-resource "incus_instance" "nas-support" {
-  name        = "nas-support"
+resource "incus_instance" "nas_support" {
+  name        = "nas-support" # Instance name can use kebab-case
   description = "NAS Support"
-  image       = "images:ubuntu/oracular/cloud"
+  image       = "images:${var.server_image}"
   profiles    = ["default", "base"]
 
   config = {
@@ -37,6 +33,15 @@ resource "incus_instance" "nas-support" {
       parent  = var.container_bridge_network_name
       nictype = "bridged"
       hwaddr  = "00:16:3e:ae:ff:01"
+    }
+  }
+
+  device {
+    name = "root"
+    type = "disk"
+    properties = {
+      pool = "apps"
+      path = "/"
     }
   }
 

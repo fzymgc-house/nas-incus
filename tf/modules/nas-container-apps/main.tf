@@ -1,19 +1,22 @@
 
-data "incus_project" "default" {
-  name = "default"
-}
-
-resource "incus_instance" "nas-container-apps" {
-  name        = "nas-container-apps"
+resource "incus_instance" "nas_container_apps" {
+  name        = "nas-container-apps" # Instance name can use kebab-case
   description = "NAS Container Apps"
-  image       = "images:ubuntu/oracular/cloud"
+  image       = "images:${var.server_image}"
   profiles    = ["default", "base"]
 
   config = {
     "user.access_interface" = "eth0"
     "raw.idmap"             = <<-EOT
       uid 568 568
+      uid 3000 3000
+      uid 3500 3500
+      uid 3501 3501
       gid 568 568
+      gid 3000 3000
+      gid 3500 3500
+      gid 3501 3501
+      gid 4000 4000
     EOT
   }
 
@@ -38,6 +41,15 @@ resource "incus_instance" "nas-container-apps" {
   }
 
   device {
+    name = "root"
+    type = "disk"
+    properties = {
+      pool = "apps"
+      path = "/"
+    }
+  }
+
+  device {
     name = "data"
     type = "disk"
     properties = {
@@ -52,6 +64,28 @@ resource "incus_instance" "nas-container-apps" {
     properties = {
       source = "/mnt/main/fzymgc-house/incus/storage/container-apps/stacks"
       path   = "/mnt/stacks"
+    }
+  }
+
+  device {
+    name = "immich-data"
+    type = "disk"
+    properties = {
+      source      = "/mnt/main/immich"
+      path        = "/mnt/immich-data"
+      propagation = "rshared"
+      recursive   = true
+    }
+  }
+
+  device {
+    name = "paperless-data"
+    type = "disk"
+    properties = {
+      source      = "/mnt/main/paperless-docs"
+      path        = "/mnt/paperless-data"
+      propagation = "rshared"
+      recursive   = true
     }
   }
 
