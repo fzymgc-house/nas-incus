@@ -2,7 +2,7 @@
 resource "incus_instance" "nas_container_apps" {
   name        = "nas-container-apps" # Instance name can use kebab-case
   description = "NAS Container Apps"
-  image       = "images:ubuntu/oracular/cloud"
+  image       = "images:${var.server_image}"
   profiles    = ["default", "base"]
 
   config = {

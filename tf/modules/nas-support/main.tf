@@ -2,7 +2,7 @@
 resource "incus_instance" "nas_support" {
   name        = "nas-support" # Instance name can use kebab-case
   description = "NAS Support"
-  image       = "images:ubuntu/oracular/cloud"
+  image       = "images:${var.server_image}"
   profiles    = ["default", "base"]
 
   config = {

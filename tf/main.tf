@@ -37,12 +37,14 @@ module "nas_support" {
   depends_on                    = [module.profiles]
   source                        = "./modules/nas-support"
   container_bridge_network_name = module.base.container_bridge_network_name
+  server_image                  = module.base.container_ubuntu_2504_image_name
 }
 
 module "nas_container_apps" {
   depends_on                    = [module.profiles]
   source                        = "./modules/nas-container-apps"
   container_bridge_network_name = module.base.container_bridge_network_name
+  server_image                  = module.base.container_ubuntu_2504_image_name
 }
 
 module "doorsportal1_server" {
