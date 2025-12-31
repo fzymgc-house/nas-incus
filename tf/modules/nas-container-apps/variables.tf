@@ -9,3 +9,8 @@ variable "server_image" {
   description = "Name of the server image"
   type        = string
 }
+
+variable "storage_pool" {
+  description = "Storage pool for the server"
+  type        = string
+}

@@ -31,3 +31,8 @@ variable "server_image" {
   type        = string
   default     = "ubuntu/oracular/cloud"
 }
+
+variable "storage_pool" {
+  description = "Storage pool for the server"
+  type        = string
+}

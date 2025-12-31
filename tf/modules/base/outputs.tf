@@ -24,3 +24,13 @@ output "container_ubuntu_2510_image_name" {
   description = "Name of the 25.10 container image"
   value       = incus_image.ubuntu_2510_cloud.source_image.name
 }
+
+output "storage_pool_default_name" {
+  description = "Name of the default storage pool"
+  value       = incus_storage_pool.default.name
+}
+
+output "storage_pool_apps_name" {
+  description = "Name of the storage pool for applications"
+  value       = incus_storage_pool.apps.name
+}

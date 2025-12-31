@@ -44,7 +44,7 @@ resource "incus_instance" "nas_container_apps" {
     name = "root"
     type = "disk"
     properties = {
-      pool = "apps"
+      pool = var.storage_pool
       path = "/"
     }
   }

@@ -38,6 +38,7 @@ module "nas_support" {
   source                        = "./modules/nas-support"
   container_bridge_network_name = module.base.container_bridge_network_name
   server_image                  = module.base.container_ubuntu_2504_image_name
+  storage_pool                  = module.base.storage_pool_apps_name
 }
 
 module "nas_container_apps" {
@@ -45,6 +46,7 @@ module "nas_container_apps" {
   source                        = "./modules/nas-container-apps"
   container_bridge_network_name = module.base.container_bridge_network_name
   server_image                  = module.base.container_ubuntu_2504_image_name
+  storage_pool                  = module.base.storage_pool_apps_name
 }
 
 module "doorsportal1_server" {
@@ -56,6 +58,7 @@ module "doorsportal1_server" {
   server_image        = module.base.container_ubuntu_2504_image_name
   server_source_dir   = "/mnt/main/fzymgc-house/incus/storage/doorsportal1/server"
   server_database_dir = "/mnt/main/fzymgc-house/incus/storage/doorsportal1/database"
+  storage_pool        = module.base.storage_pool_apps_name
 }
 
 module "precipice_server" {
@@ -67,6 +70,7 @@ module "precipice_server" {
   server_image        = module.base.container_ubuntu_2504_image_name
   server_source_dir   = "/mnt/main/fzymgc-house/incus/storage/precipice/server"
   server_database_dir = "/mnt/main/fzymgc-house/incus/storage/precipice/database"
+  storage_pool        = module.base.storage_pool_apps_name
 }
 
 module "github_runners" {
@@ -74,4 +78,5 @@ module "github_runners" {
   source       = "./modules/github-runner"
   runner_count = 1
   runner_name  = "gh-runner"
+  storage_pool = module.base.storage_pool_apps_name
 }

@@ -29,8 +29,19 @@ resource "incus_instance" "ares-server" {
   }
 
   device {
+    name = "root"
+    type = "disk"
+    properties = {
+      pool = var.storage_pool
+      path = "/"
+    }
+  }
+
+
+  device {
     name = "server"
     type = "disk"
+
     properties = {
       source = var.server_source_dir
       path   = "/home/ares"
